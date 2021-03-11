@@ -1,0 +1,18 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/mnt/d/Collage/hwCode/SDK_C++/CodeCraft-2021/CodeCraft-2021.cpp
+iostream
+-
+lib/1.cpp
+/mnt/d/Collage/hwCode/SDK_C++/CodeCraft-2021/lib/1.cpp
+
+/mnt/d/Collage/hwCode/SDK_C++/CodeCraft-2021/lib/1.cpp
+cstdio
+-
+

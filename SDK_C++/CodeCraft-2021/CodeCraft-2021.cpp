@@ -1,12 +1,11 @@
 #include <iostream>
-#include "1.cpp"
-int main()
-{
-	test();
-	// TODO:read standard input
-	// TODO:process
-	// TODO:write standard output
-	// TODO:fflush(stdout);
+#include "lib/server.cpp"
+#include "lib/virtualServer.cpp"
+#include "lib/input.cpp"
+#include "lib/request.cpp"
 
+int main() {
+	input();
+	
 	return 0;
 }
