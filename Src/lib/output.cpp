@@ -8,12 +8,12 @@
 */
 
 int RealId = 0; // 实际服务器id
-std::map<int, int> virtualId_RealId; // 虚拟id --- 实际id
+std::unordered_map<int, int> virtualId_RealId; // 虚拟id --- 实际id
 
 void output() {
 	for (int i = 1; i <= T; i++) {
         // 对于每一天所购买的服务器 , 进行记录数量 , 用map记录
-		std::map<std::string , int> temp;
+		std::unordered_map<std::string , int> temp;
 		for (auto & j : BuyList[i]) {
 			if (temp.count(j) == 0) {
 				temp[j] = 1;

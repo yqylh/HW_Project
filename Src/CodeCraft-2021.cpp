@@ -40,6 +40,7 @@ void deleteVitrualServer(int _id) {
 	}
 	virtualServerList.erase(_id);
 }
+
 // 创建单核心虚拟机
 void createOddServer(request & req, virtualServer & virSerType) {
 	bool flag = 0;

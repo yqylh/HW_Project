@@ -3,6 +3,7 @@
 #include <iostream>
 #include <vector>
 #include <map>
+#include <unordered_map>
 #include <sstream>
 #include "server.cpp"
 #include "virtualServer.cpp"
@@ -10,11 +11,11 @@
 
 
 int N; // 服务器类型数量
-std::map<std::string, server> serverType; // 服务器类型数组
-std::map<int, server> serverList; // 服务器数组
+std::unordered_map<std::string, server> serverType; // 服务器类型数组
+std::unordered_map<int, server> serverList; // 服务器数组
 int M; // 虚拟机类型数
-std::map<std::string, virtualServer> virtualServerType; // 虚拟服务器类型数组
-std::map<int, virtualServer> virtualServerList; // 虚拟服务器数组
+std::unordered_map<std::string, virtualServer> virtualServerType; // 虚拟服务器类型数组
+std::unordered_map<int, virtualServer> virtualServerList; // 虚拟服务器数组
 int T; // T天的用户数据
 std::vector<request> requestList; // 请求列表
 int serverId = 0; // 服务器id
