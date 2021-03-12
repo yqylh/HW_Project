@@ -40,97 +40,133 @@ void deleteVitrualServer(int _id) {
 	}
 	virtualServerList.erase(_id);
 }
+// 查找一台可以放得下该虚拟机的服务器
+int findServer(request & req, virtualServer & virSerType , bool isDouble) {
+	int retServerId; // 返回变量
+	retServerId = -1;
+	bool lorR = 0; // 0代表左边 1代表右边
+	if (isDouble == 0) {
+		for (auto & i : serverList) { // 查找可以塞的下的
+			if (i.second.lCore > virSerType.core && i.second.lRam > virSerType.ram) {
+				// 策略
+				retServerId = i.first;
+				lorR = 0;
+			} else if (i.second.rCore > virSerType.core && i.second.rRam > virSerType.ram) {
+				// 策略
+				retServerId = i.first;
+				lorR = 1;
+			}
+		}
+		if (retServerId != -1) {
+			auto &x = serverList[retServerId];
+			if (lorR == 0) {
+				x.lCore -= virSerType.core;
+				x.lRam -= virSerType.ram;
+			} else {
+				x.rCore -= virSerType.core;
+				x.rRam -= virSerType.ram;
+			}
+			virtualServerList[req.id] = virtualServerType[req.name];
+			virtualServerList[req.id].serverId = retServerId;
+			virtualServerList[req.id].where = lorR;
+			recordCreate(req.day , retServerId , lorR);
+		}
+	} else {
+		for (auto & i : serverList) {
+			if (i.second.lCore > virSerType.core && i.second.lRam > virSerType.ram && i.second.rCore > virSerType.core && i.second.rRam > virSerType.ram) {
+				// 策略
+				retServerId = i.first;
+			}
+		}
+		if (retServerId != -1) {
+			auto &x = serverList[retServerId];
+			x.lCore -= virSerType.core;
+			x.lRam -= virSerType.ram;
+			x.rCore -= virSerType.core;
+			x.rRam -= virSerType.ram;
+			virtualServerList[req.id] = virtualServerType[req.name];
+			virtualServerList[req.id].serverId = x.id;
+			recordCreate(req.day , retServerId, -1);
+		}
+	}
+	return retServerId;
+}
+
+// 购买一台可以放得下的服务器
+void buyServer(request & req, virtualServer & virSerType , bool isDouble) {
+	std::string ans;
+	for (auto & i : serverType) { 
+		if (i.second.core / 2 > virSerType.core && i.second.ram / 2 > virSerType.ram) {
+			// 策略
+			ans = i.first;
+		}
+	}
+	if (isDouble == 0) {
+		serverList[serverId] = serverType[ans];
+		auto &temp = serverList[serverId];
+		temp.lCore = temp.core / 2;
+		temp.rCore = temp.core / 2;
+		temp.lRam = temp.ram / 2;
+		temp.rRam = temp.ram / 2;
+		temp.id = serverId++;
+		temp.createDay = req.day;
+		// 默认就扔在左边
+		temp.lCore -= virSerType.core;
+		temp.lRam -= virSerType.ram;
+		virtualServerList[req.id] = virtualServerType[req.name];
+		virtualServerList[req.id].serverId = temp.id;
+		virtualServerList[req.id].where = 0;
+		recordBuy(temp.createDay , temp.name);
+		recordCreate(req.day , temp.id, 0);
+	} else {
+		serverList[serverId] = serverType[ans];
+		auto &temp = serverList[serverId];
+		temp.lCore = temp.core / 2;
+		temp.rCore = temp.core / 2;
+		temp.lRam = temp.ram / 2;
+		temp.rRam = temp.ram / 2;
+		temp.id = serverId++;
+		temp.createDay = req.day;
+		temp.lCore -= virSerType.core;
+		temp.rCore -= virSerType.core;
+		temp.lRam -= virSerType.ram;
+		temp.rRam -= virSerType.ram;
+		virtualServerList[req.id] = virtualServerType[req.name];
+		virtualServerList[req.id].serverId = temp.id;
+		recordBuy(temp.createDay , temp.name);
+		recordCreate(req.day , temp.id , -1);
+	}
+}
 
 // 创建单核心虚拟机
 void createOddServer(request & req, virtualServer & virSerType) {
-	bool flag = 0;
-	for (auto & i : serverList) { // 查找可以塞的下的
-		if (i.second.lCore > virSerType.core && i.second.lRam > virSerType.ram) {
-			i.second.lCore -= virSerType.core;
-			i.second.lRam -= virSerType.ram;
-			virtualServerList[req.id] = virtualServerType[req.name];
-			virtualServerList[req.id].serverId = i.second.id;
-			virtualServerList[req.id].where = 0;
-			recordCreate(req.day , i.second.id , 0);
-			flag = 1;
-		} else if (i.second.rCore > virSerType.core && i.second.rRam > virSerType.ram) {
-			i.second.rCore -= virSerType.core;
-			i.second.rRam -= virSerType.ram;
-			virtualServerList[req.id] = virtualServerType[req.name];
-			virtualServerList[req.id].serverId = i.second.id;
-			virtualServerList[req.id].where = 1;
-			recordCreate(req.day , i.second.id, 1);
-			flag = 1;
-		}
-		if (flag) break;
-	}
-	if (!flag) { // 如果没找到可以塞的下的
-		for (auto & i : serverType) { // 找一台新的可以塞的下的
-			if (i.second.core / 2 > virSerType.core && i.second.ram / 2 > virSerType.ram) {
-				serverList[serverId] = i.second;
-				auto &temp = serverList[serverId];
-				temp.lCore = temp.core / 2;
-				temp.rCore = temp.core / 2;
-				temp.lRam = temp.ram / 2;
-				temp.rRam = temp.ram / 2;
-				temp.id = serverId++;
-				temp.createDay = req.day;
-				temp.lCore -= virSerType.core;
-				temp.lRam -= virSerType.ram;
-				virtualServerList[req.id] = virtualServerType[req.name];
-				virtualServerList[req.id].serverId = temp.id;
-				virtualServerList[req.id].where = 0;
-				recordBuy(temp.createDay , temp.name);
-				recordCreate(req.day , temp.id, 0);
-				break;
-			}
-		}
+	int ans = findServer(req, virSerType, 0);
+	if (ans == -1)  { // 如果没找到可以塞的下的
+		buyServer(req, virSerType, 0);
 	}
 }
 // 创建双核心虚拟机
 void createDoubleServer(request & req, virtualServer & virSerType) {
-	bool flag = 0;
-	for (auto & i : serverList) {
-		if (i.second.lCore > virSerType.core && i.second.lRam > virSerType.ram && i.second.rCore > virSerType.core && i.second.rRam > virSerType.ram) {
-			i.second.lCore -= virSerType.core;
-			i.second.lRam -= virSerType.ram;
-			i.second.rCore -= virSerType.core;
-			i.second.rRam -= virSerType.ram;
-			virtualServerList[req.id] = virtualServerType[req.name];
-			virtualServerList[req.id].serverId = i.second.id;
-			flag = 1;
-			recordCreate(req.day , i.second.id, -1);
-		}
-		if (flag) break;
-	}
-	if (!flag) {
-		for (auto & i : serverType) {
-			if (i.second.core / 2 > virSerType.core && i.second.ram / 2 > virSerType.ram) {
-				serverList[serverId] = i.second;
-				auto &temp = serverList[serverId];
-				temp.lCore = temp.core / 2;
-				temp.rCore = temp.core / 2;
-				temp.lRam = temp.ram / 2;
-				temp.rRam = temp.ram / 2;
-				temp.id = serverId++;
-				temp.createDay = req.day;
-				temp.lCore -= virSerType.core;
-				temp.rCore -= virSerType.core;
-				temp.lRam -= virSerType.ram;
-				temp.rRam -= virSerType.ram;
-				virtualServerList[req.id] = virtualServerType[req.name];
-				virtualServerList[req.id].serverId = temp.id;
-				recordBuy(temp.createDay , temp.name);
-				recordCreate(req.day , temp.id , -1);
-				break;
-			}
-		}
+	int ans = findServer(req, virSerType, 1);
+	if (ans == -1) {
+		buyServer(req, virSerType, 1);
 	}
 }
+
+// 迁移策略
+void move() {
+	
+}
+
 int main() {
 	input();
 	init();
+	int day = 1;
 	for (auto & req : requestList) {
+		if (day != req.day) {
+			day = req.day;
+			move();
+		}
 		// 创建请求
 		if (req.type == 0) {
 			auto &virSerType = virtualServerType[req.name];
