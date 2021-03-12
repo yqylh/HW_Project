@@ -3,159 +3,145 @@
 #include "lib/virtualServer.cpp"
 #include "lib/input.cpp"
 #include "lib/request.cpp"
+#include "lib/output.cpp"
 
-int serverId = 0;
-std::vector<std::vector<std::string> > BuyList;
-std::vector<std::vector<std::pair<int, int> > > CreateList;
 
-int main() {
-	input();
+/* 初始化 , 把购买的List和创建的List清空 */
+void init() {
 	for (int i = 0; i < T + 5; i++) BuyList.push_back(std::vector<std::string> (0) );
 	for (int i = 0; i < T + 5; i++) CreateList.push_back(std::vector<std::pair<int, int> >(0) );
-	for (auto & i : requestList) {
-		if (i.type == 0) { // 创建请求
-			auto x = virtualServerType[i.name];
-			// std::cout << x.name << " " << i.name << "\n";
-			if (x.isDouble == 0) { // 单核心布置
-				bool flag = 0;
-				for (auto & j : serverList) { // 查找可以塞的下的
-					if (j.second.lCore > x.core && j.second.lRam > x.ram) { 
-						j.second.lCore -= x.core;
-						j.second.lRam -= x.ram;
-						virtualServerList[i.id] = virtualServerType[i.name];
-						virtualServerList[i.id].serverId = j.second.id;
-						virtualServerList[i.id].where = 0;
-						// 记录创建
-						CreateList[i.day].push_back(std::make_pair(j.second.id , 0));
-						// 记录完毕
-						flag = 1;
-					} else if (j.second.rCore > x.core && j.second.rRam > x.ram) {
-						j.second.rCore -= x.core;
-						j.second.rRam -= x.ram;
-						virtualServerList[i.id] = virtualServerType[i.name];
-						virtualServerList[i.id].serverId = j.second.id;
-						virtualServerList[i.id].where = 1;
-						// 记录创建
-						CreateList[i.day].push_back(std::make_pair(j.second.id , 1));
-						// 记录完毕
-						flag = 1;
-					}
-					if (flag) break;
-				}
-				if (!flag) { // 如果没找到可以塞的下的
-					for (auto & j : serverType) { // 找一台新的可以塞的下的
-						if (j.second.core / 2 > x.core && j.second.ram / 2 > x.ram) {
-							serverList[serverId] = j.second;
-							auto &temp = serverList[serverId];
-							temp.lCore = temp.core / 2;
-							temp.rCore = temp.core / 2;
-							temp.lRam = temp.ram / 2;
-							temp.rRam = temp.ram / 2;
-							temp.id = serverId++;
-							temp.createDay = i.day;
-							temp.lCore -= x.core;
-							temp.lRam -= x.ram;
-							virtualServerList[i.id] = virtualServerType[i.name];
-							virtualServerList[i.id].serverId = temp.id;
-							virtualServerList[i.id].where = 0;
-							// 记录购买
-							BuyList[temp.createDay].push_back(temp.name);
-							// 记录结束
-							// 记录创建
-							CreateList[i.day].push_back(std::make_pair(temp.id , 0));
-							// 记录完毕
-							break;
-						}
-					}
-				}
-			} else {
-				bool flag = 0;
-				for (auto & j : serverList) { 
-					if (j.second.lCore > x.core && j.second.lRam > x.ram && j.second.rCore > x.core && j.second.rRam > x.ram) {
-						j.second.lCore -= x.core;
-						j.second.lRam -= x.ram;
-						j.second.rCore -= x.core;
-						j.second.rRam -= x.ram;
-						virtualServerList[i.id] = virtualServerType[i.name];
-						virtualServerList[i.id].serverId = j.second.id;
-						flag = 1;
-						// 记录创建
-						CreateList[i.day].push_back(std::make_pair(j.second.id , -1));
-						// 记录完毕
-					}
-					if (flag) break;
-				}
-				if (!flag) {
-					for (auto & j : serverType) {
-						if (j.second.core / 2 > x.core && j.second.ram / 2 > x.ram) {
-							serverList[serverId] = j.second;
-							auto &temp = serverList[serverId];
-							temp.lCore = temp.core / 2;
-							temp.rCore = temp.core / 2;
-							temp.lRam = temp.ram / 2;
-							temp.rRam = temp.ram / 2;
-							temp.id = serverId++;
-							temp.createDay = i.day;
-							temp.lCore -= x.core;
-							temp.rCore -= x.core;
-							temp.lRam -= x.ram;
-							temp.rRam -= x.ram;
-							virtualServerList[i.id] = virtualServerType[i.name];
-							virtualServerList[i.id].serverId = temp.id;
-							// 记录购买
-							BuyList[temp.createDay].push_back(temp.name);
-							// 记录结束
-							// 记录创建
-							CreateList[i.day].push_back(std::make_pair(temp.id , -1));
-							// 记录完毕
-							break;
-						}
-					}
-				}
+}
+// 记录创建一台虚拟机
+void recordCreate(int _day , int _serverId , int _type) {
+	CreateList[_day].push_back(std::make_pair(_serverId , _type));
+}
+// 记录购买一台服务器
+void recordBuy(int _day, std::string _name) {
+	BuyList[_day].push_back(_name);
+}
+// 删除一台虚拟机
+void deleteVitrualServer(int _id) {
+	// 找到这个id对应的实例
+	auto &x = virtualServerList[_id];
+	// 双节点
+	if (x.isDouble == 1) {
+		serverList[x.serverId].lCore += x.core / 2;
+		serverList[x.serverId].rCore += x.core / 2;
+		serverList[x.serverId].lRam += x.ram / 2;
+		serverList[x.serverId].rRam += x.ram / 2;
+	} else { // 单节点
+		if (x.where == 0) {
+			serverList[x.serverId].lCore += x.core;
+			serverList[x.serverId].lRam += x.ram;
+		} else {
+			serverList[x.serverId].rCore += x.core;
+			serverList[x.serverId].rRam += x.ram;
+		}
+	}
+	virtualServerList.erase(_id);
+}
+// 创建单核心虚拟机
+void createOddServer(request & req, virtualServer & virSerType) {
+	bool flag = 0;
+	for (auto & i : serverList) { // 查找可以塞的下的
+		if (i.second.lCore > virSerType.core && i.second.lRam > virSerType.ram) {
+			i.second.lCore -= virSerType.core;
+			i.second.lRam -= virSerType.ram;
+			virtualServerList[req.id] = virtualServerType[req.name];
+			virtualServerList[req.id].serverId = i.second.id;
+			virtualServerList[req.id].where = 0;
+			recordCreate(req.day , i.second.id , 0);
+			flag = 1;
+		} else if (i.second.rCore > virSerType.core && i.second.rRam > virSerType.ram) {
+			i.second.rCore -= virSerType.core;
+			i.second.rRam -= virSerType.ram;
+			virtualServerList[req.id] = virtualServerType[req.name];
+			virtualServerList[req.id].serverId = i.second.id;
+			virtualServerList[req.id].where = 1;
+			recordCreate(req.day , i.second.id, 1);
+			flag = 1;
+		}
+		if (flag) break;
+	}
+	if (!flag) { // 如果没找到可以塞的下的
+		for (auto & i : serverType) { // 找一台新的可以塞的下的
+			if (i.second.core / 2 > virSerType.core && i.second.ram / 2 > virSerType.ram) {
+				serverList[serverId] = i.second;
+				auto &temp = serverList[serverId];
+				temp.lCore = temp.core / 2;
+				temp.rCore = temp.core / 2;
+				temp.lRam = temp.ram / 2;
+				temp.rRam = temp.ram / 2;
+				temp.id = serverId++;
+				temp.createDay = req.day;
+				temp.lCore -= virSerType.core;
+				temp.lRam -= virSerType.ram;
+				virtualServerList[req.id] = virtualServerType[req.name];
+				virtualServerList[req.id].serverId = temp.id;
+				virtualServerList[req.id].where = 0;
+				recordBuy(temp.createDay , temp.name);
+				recordCreate(req.day , temp.id, 0);
+				break;
+			}
+		}
+	}
+}
+// 创建双核心虚拟机
+void createDoubleServer(request & req, virtualServer & virSerType) {
+	bool flag = 0;
+	for (auto & i : serverList) {
+		if (i.second.lCore > virSerType.core && i.second.lRam > virSerType.ram && i.second.rCore > virSerType.core && i.second.rRam > virSerType.ram) {
+			i.second.lCore -= virSerType.core;
+			i.second.lRam -= virSerType.ram;
+			i.second.rCore -= virSerType.core;
+			i.second.rRam -= virSerType.ram;
+			virtualServerList[req.id] = virtualServerType[req.name];
+			virtualServerList[req.id].serverId = i.second.id;
+			flag = 1;
+			recordCreate(req.day , i.second.id, -1);
+		}
+		if (flag) break;
+	}
+	if (!flag) {
+		for (auto & i : serverType) {
+			if (i.second.core / 2 > virSerType.core && i.second.ram / 2 > virSerType.ram) {
+				serverList[serverId] = i.second;
+				auto &temp = serverList[serverId];
+				temp.lCore = temp.core / 2;
+				temp.rCore = temp.core / 2;
+				temp.lRam = temp.ram / 2;
+				temp.rRam = temp.ram / 2;
+				temp.id = serverId++;
+				temp.createDay = req.day;
+				temp.lCore -= virSerType.core;
+				temp.rCore -= virSerType.core;
+				temp.lRam -= virSerType.ram;
+				temp.rRam -= virSerType.ram;
+				virtualServerList[req.id] = virtualServerType[req.name];
+				virtualServerList[req.id].serverId = temp.id;
+				recordBuy(temp.createDay , temp.name);
+				recordCreate(req.day , temp.id , -1);
+				break;
+			}
+		}
+	}
+}
+int main() {
+	input();
+	init();
+	for (auto & req : requestList) {
+		// 创建请求
+		if (req.type == 0) {
+			auto &virSerType = virtualServerType[req.name];
+			if (virSerType.isDouble == 0) { // 单核心布置
+				createOddServer(req , virSerType);
+			} else { // 双核心配置
+				createDoubleServer(req , virSerType);
 			}
 		} else { // 删除
-			auto &x = virtualServerList[i.id];
-			if (x.isDouble == 1) {
-				serverList[x.serverId].lCore += x.core / 2;
-				serverList[x.serverId].rCore += x.core / 2;
-				serverList[x.serverId].lRam += x.ram / 2;
-				serverList[x.serverId].rRam += x.ram / 2;
-			} else {
-				if (x.where == 0) {
-					serverList[x.serverId].lCore += x.core / 2;
-					serverList[x.serverId].lRam += x.ram / 2;
-				} else {
-					serverList[x.serverId].rCore += x.core / 2;
-					serverList[x.serverId].rRam += x.ram / 2;
-				}
-			}
-			virtualServerList.erase(i.id);
+			deleteVitrualServer(req.id);
 		}
 	}
-	
-	
-	for (int i = 1; i <= T; i++) {
-		std::map<std::string , int> temp;
-		for (auto & j : BuyList[i]) {
-			if (temp.count(j) == 0) {
-				temp[j] = 1;
-			} else {
-				temp[j]++;
-			}
-		}
-		// 服务器编号理解错了
-		printf("(purchase, %d)\n", temp.size());
-		for (auto & j : temp) {
-			std::cout << "(" << j.first << ", " << j.second << ")\n";
-		}
-		std::cout << "(migration, 0)\n";
-		for (auto & j : CreateList[i]) {
-			if (j.second == -1) {
-				printf("(%d)\n" , j.first);
-			} else {
-				printf("(%d, %c)\n" , j.first , (j.second == 0 ? 'A' : 'B')  );
-			}
-		}
-	}
+	output();
 	return 0;
 }

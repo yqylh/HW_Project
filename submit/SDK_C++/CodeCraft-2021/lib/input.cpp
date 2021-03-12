@@ -1,3 +1,5 @@
+#ifndef __input__
+#define __input__
 #include <iostream>
 #include <vector>
 #include <map>
@@ -15,6 +17,10 @@ std::map<std::string, virtualServer> virtualServerType; // 虚拟服务器类型
 std::map<int, virtualServer> virtualServerList; // 虚拟服务器数组
 int T; // T天的用户数据
 std::vector<request> requestList; // 请求列表
+int serverId = 0; // 服务器id
+std::vector<std::vector<std::string> > BuyList; // T天 每天一个List 存需要买的服务器的名字
+std::vector<std::vector<std::pair<int, int> > > CreateList; // T天 每天一个List 存的是虚拟机实际存储的位置
+
 
 void solveServerInput() {
     std::string s = "";
@@ -107,3 +113,5 @@ void input() {
         }
     }
 }
+
+#endif
