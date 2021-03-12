@@ -1,6 +1,7 @@
 #include <iostream>
 #include "lib/server.cpp"
 #include "lib/virtualServer.cpp"
+#include "lib/moveMark.cpp"
 #include "lib/input.cpp"
 #include "lib/request.cpp"
 #include "lib/output.cpp"
@@ -10,6 +11,7 @@
 void init() {
 	for (int i = 0; i < T + 5; i++) BuyList.push_back(std::vector<std::string> (0) );
 	for (int i = 0; i < T + 5; i++) CreateList.push_back(std::vector<std::pair<int, int> >(0) );
+	for (int i = 0; i < T + 5; i++) moveList.push_back(std::vector<moveMark>(0) );
 }
 // 记录创建一台虚拟机
 void recordCreate(int _day , int _serverId , int _type) {
@@ -80,10 +82,10 @@ int findServer(request & req, virtualServer & virSerType , bool isDouble) {
 		}
 		if (retServerId != -1) {
 			auto &x = serverList[retServerId];
-			x.lCore -= virSerType.core;
-			x.lRam -= virSerType.ram;
-			x.rCore -= virSerType.core;
-			x.rRam -= virSerType.ram;
+			x.lCore -= virSerType.core / 2;
+			x.lRam -= virSerType.ram / 2;
+			x.rCore -= virSerType.core / 2;
+			x.rRam -= virSerType.ram / 2;
 			virtualServerList[req.id] = virtualServerType[req.name];
 			virtualServerList[req.id].serverId = x.id;
 			recordCreate(req.day , retServerId, -1);
@@ -127,10 +129,10 @@ void buyServer(request & req, virtualServer & virSerType , bool isDouble) {
 		temp.rRam = temp.ram / 2;
 		temp.id = serverId++;
 		temp.createDay = req.day;
-		temp.lCore -= virSerType.core;
-		temp.rCore -= virSerType.core;
-		temp.lRam -= virSerType.ram;
-		temp.rRam -= virSerType.ram;
+		temp.lCore -= virSerType.core / 2;
+		temp.rCore -= virSerType.core / 2;
+		temp.lRam -= virSerType.ram / 2;
+		temp.rRam -= virSerType.ram / 2;
 		virtualServerList[req.id] = virtualServerType[req.name];
 		virtualServerList[req.id].serverId = temp.id;
 		recordBuy(temp.createDay , temp.name);
@@ -154,8 +156,71 @@ void createDoubleServer(request & req, virtualServer & virSerType) {
 }
 
 // 迁移策略
-void move() {
-	
+void move(int day) {
+	int maxMoveNum = virtualServerList.size() * 5 / 1000;
+	for (auto & i : virtualServerList) if (maxMoveNum) {
+		for (auto & j : serverList) {
+			auto & before = serverList[i.second.serverId];
+			if (i.second.isDouble == 0) {
+				 // 策略
+				 // 左右核心可以互相移动
+				//  if (j.second.lCore > i.second.core && j.second.lRam > i.second.ram && i.second.serverId != j.first) {
+				// 	j.second.lCore -= i.second.core;
+				// 	j.second.lRam -= i.second.ram;
+				// 	if (i.second.where == 0) {
+				// 		before.lCore += i.second.core;
+				// 		before.lRam += i.second.ram;
+				// 	} else {
+				// 		before.rCore += i.second.core;
+				// 		before.rRam += i.second.ram;
+				// 	}
+				// 	i.second.serverId = j.first;
+				// 	i.second.where = 0;
+				// 	moveList[day].push_back(moveMark(i.first, j.first, 0));
+				// 	maxMoveNum--;
+				// 	break;
+				//  }
+				//  if (j.second.rCore > i.second.core && j.second.rRam > i.second.ram && i.second.serverId != j.first) {
+				// 	j.second.rCore -= i.second.core;
+				// 	j.second.rRam -= i.second.ram;
+				// 	if (i.second.where == 0) {
+				// 		before.lCore += i.second.core;
+				// 		before.lRam += i.second.ram;
+				// 	} else {
+				// 		before.rCore += i.second.core;
+				// 		before.rRam += i.second.ram;
+				// 	}
+				// 	i.second.serverId = j.first;
+				// 	i.second.where = 1;
+				// 	moveList[day].push_back(moveMark(i.first, j.first, 1));
+				// 	maxMoveNum--;
+				// 	break;
+				//  }
+			} else {
+				// 策略
+				if (j.second.lCore > i.second.core && j.second.lRam > i.second.ram &&
+					j.second.rCore > i.second.core && j.second.rRam > i.second.ram && i.second.serverId != j.first) {
+
+					j.second.lCore -= i.second.core / 2;
+					j.second.lRam -= i.second.ram / 2;
+					j.second.rCore -= i.second.core / 2;
+					j.second.rRam -= i.second.ram / 2;
+
+					before.lCore += i.second.core / 2;
+					before.lRam += i.second.ram / 2;
+					before.rCore += i.second.core / 2;
+					before.rRam += i.second.ram / 2;
+					
+					i.second.serverId = j.first;
+					moveList[day].push_back(moveMark(i.first, j.first, -1));
+					maxMoveNum--;
+					break;
+				}
+			}
+		}
+		//  测试用
+		break;
+	}
 }
 
 int main() {
@@ -165,7 +230,8 @@ int main() {
 	for (auto & req : requestList) {
 		if (day != req.day) {
 			day = req.day;
-			move();
+			// 迁移
+			move(day);
 		}
 		// 创建请求
 		if (req.type == 0) {

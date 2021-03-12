@@ -33,8 +33,17 @@ void output() {
 				}
 			}
 		}
+		// 输出交换list
+		printf("(migration, %d)\n" , (int)moveList[i].size());
+		for (auto & j : moveList[i]) {
+			if (j.where == -1) {
+				printf("(%d, %d)\n" , j.virSerId, virtualId_RealId[j.serId]);
+			} else {
+				printf("(%d, %d, %d)\n" , j.virSerId, virtualId_RealId[j.serId], (j.where == 0 ? 'A' : 'B') );
+			}
+		}
+
         // 输出虚拟机的配置 , 需要根据map做一个实际服务器id的转换
-		std::cout << "(migration, 0)\n";
 		for (auto & j : CreateList[i]) {
 			if (j.second == -1) {
 				printf("(%d)\n" , virtualId_RealId[j.first]);
