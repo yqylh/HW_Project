@@ -18,7 +18,7 @@ int main() {
 		if (day != req.day) {
 			day = req.day;
 			// 迁移
-			// move(day);
+			move(day);
 		}
 		// 创建请求
 		if (req.type == 0) {

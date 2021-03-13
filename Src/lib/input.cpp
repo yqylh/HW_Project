@@ -5,6 +5,7 @@
 #include <map>
 #include <unordered_map>
 #include <sstream>
+#include <algorithm>
 #include "server.h"
 #include "virtualServer.h"
 #include "request.h"
