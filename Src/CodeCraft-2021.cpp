@@ -261,8 +261,7 @@ void move(int day) {
 			auto & before = serverList[i.second.serverId];
 			if (i.second.isDouble == 0) {
 				 // 策略
-				 // 左右核心可以互相移动☆
-				 if (j.second.lCore > i.second.core && j.second.lRam > i.second.ram && i.second.serverId != j.first) {
+				 if (j.second.lCore > i.second.core && j.second.lRam > i.second.ram && (i.second.serverId != j.first || i.second.where == 1)) {
 					j.second.lCore -= i.second.core;
 					j.second.lRam -= i.second.ram;
 					if (i.second.where == 0) {
@@ -278,7 +277,7 @@ void move(int day) {
 					maxMoveNum--;
 					break;
 				 }
-				 if (j.second.rCore > i.second.core && j.second.rRam > i.second.ram && i.second.serverId != j.first) {
+				 if (j.second.rCore > i.second.core && j.second.rRam > i.second.ram && (i.second.serverId != j.first || i.second.where == 0)) {
 					j.second.rCore -= i.second.core;
 					j.second.rRam -= i.second.ram;
 					if (i.second.where == 0) {
@@ -316,6 +315,7 @@ void move(int day) {
 				}
 			}
 		}
+		break;
 	}
 }
 
@@ -324,11 +324,11 @@ int main() {
 	init();
 	int day = 1;
 	for (auto & req : requestList) {
-		// if (day != req.day) {
-		// 	day = req.day;
-		// 	// 迁移
-		// 	move(day);
-		// }
+		if (day != req.day) {
+			day = req.day;
+			// 迁移
+			move(day);
+		}
 		// 创建请求
 		if (req.type == 0) {
 			auto &virSerType = virtualServerType[req.name];

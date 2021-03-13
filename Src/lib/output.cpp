@@ -39,7 +39,7 @@ void output() {
 			if (j.where == -1) {
 				printf("(%d, %d)\n" , j.virSerId, virtualId_RealId[j.serId]);
 			} else {
-				printf("(%d, %d, %d)\n" , j.virSerId, virtualId_RealId[j.serId], (j.where == 0 ? 'A' : 'B') );
+				printf("(%d, %d, %c)\n" , j.virSerId, virtualId_RealId[j.serId], (j.where == 0 ? 'A' : 'B') );
 			}
 		}
 
