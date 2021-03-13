@@ -50,13 +50,44 @@ int findServer(request & req, virtualServer & virSerType , bool isDouble) {
 	if (isDouble == 0) {
 		for (auto & i : serverList) { // 查找可以塞的下的
 			if (i.second.lCore > virSerType.core && i.second.lRam > virSerType.ram) {
-				// 策略
-				retServerId = i.first;
-				lorR = 0;
-			} else if (i.second.rCore > virSerType.core && i.second.rRam > virSerType.ram) {
-				// 策略
-				retServerId = i.first;
-				lorR = 1;
+				// 策略零 : 没有策略
+				if (retServerId == -1) {
+					retServerId = i.first;
+					lorR = 0;
+				} else {
+					// 策略一 : 找核心和内存都尽量满的服务器
+					if (lorR == 0) {
+						if (i.second.lCore < serverList[retServerId].lCore && i.second.lRam < serverList[retServerId].lRam) {
+							retServerId = i.first;
+							lorR = 0;
+						}
+					} else {
+						if (i.second.lCore < serverList[retServerId].rCore && i.second.lRam < serverList[retServerId].rRam) {
+							retServerId = i.first;
+							lorR = 0;
+						}
+					}
+				}
+			}
+			if (i.second.rCore > virSerType.core && i.second.rRam > virSerType.ram) {
+				// 策略零 : 没有策略
+				if (retServerId == -1) {
+					retServerId = i.first;
+					lorR = 1;
+				} else {
+					// 策略一 : 找核心和内存都尽量满的服务器
+					if (lorR == 0) {
+						if (i.second.rCore < serverList[retServerId].lCore && i.second.rRam < serverList[retServerId].lRam) {
+							retServerId = i.first;
+							lorR = 1;
+						}
+					} else {
+						if (i.second.rCore < serverList[retServerId].rCore && i.second.rRam < serverList[retServerId].rRam) {
+							retServerId = i.first;
+							lorR = 1;
+						}
+					}
+				}
 			}
 		}
 		if (retServerId != -1) {
@@ -76,8 +107,15 @@ int findServer(request & req, virtualServer & virSerType , bool isDouble) {
 	} else {
 		for (auto & i : serverList) {
 			if (i.second.lCore > virSerType.core && i.second.lRam > virSerType.ram && i.second.rCore > virSerType.core && i.second.rRam > virSerType.ram) {
-				// 策略
-				retServerId = i.first;
+				// 策略零
+				if (retServerId == -1) retServerId = i.first;
+				else {
+					// 策略一 : 找核心和内存都尽量满的服务器
+					if (i.second.lCore + i.second.rCore < serverList[retServerId].lCore + serverList[retServerId].rCore && 
+					    	i.second.lRam + i.second.rRam < serverList[retServerId].lRam + serverList[retServerId].rRam ) {
+						retServerId = i.first;
+					}
+				}	
 			}
 		}
 		if (retServerId != -1) {
@@ -96,11 +134,23 @@ int findServer(request & req, virtualServer & virSerType , bool isDouble) {
 
 // 购买一台可以放得下的服务器
 void buyServer(request & req, virtualServer & virSerType , bool isDouble) {
-	std::string ans;
+	std::string ans = "";
 	for (auto & i : serverType) { 
 		if (i.second.core / 2 > virSerType.core && i.second.ram / 2 > virSerType.ram) {
-			// 策略
-			ans = i.first;
+			if (ans == "") {
+				ans = i.first;
+				continue;
+			}
+			// 策略零 没有策略
+			// ans = i.first;
+
+			int nowCost = i.second.cost + i.second.dayCost * (T - req.day);
+			int oldCost = serverType[ans].cost + serverType[ans].dayCost * (T - req.day);
+			// 策略一 买总消耗最便宜的 13亿
+			if (nowCost < oldCost) ans = i.first;
+			
+			// 策略二 买单核心均价最便宜的 43亿
+			// if (nowCost / i.second.core < oldCost / serverType[ans].core) ans = i.first;
 		}
 	}
 	if (isDouble == 0) {
@@ -228,11 +278,11 @@ int main() {
 	init();
 	int day = 1;
 	for (auto & req : requestList) {
-		if (day != req.day) {
-			day = req.day;
-			// 迁移
-			move(day);
-		}
+		// if (day != req.day) {
+		// 	day = req.day;
+		// 	// 迁移
+		// 	move(day);
+		// }
 		// 创建请求
 		if (req.type == 0) {
 			auto &virSerType = virtualServerType[req.name];
