@@ -261,7 +261,7 @@ void move(int day) {
 			auto & before = serverList[i.second.serverId];
 			if (i.second.isDouble == 0) {
 				 // 策略
-				 // 左右核心可以互相移动
+				 // 左右核心可以互相移动☆
 				 if (j.second.lCore > i.second.core && j.second.lRam > i.second.ram && i.second.serverId != j.first) {
 					j.second.lCore -= i.second.core;
 					j.second.lRam -= i.second.ram;
