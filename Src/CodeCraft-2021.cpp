@@ -67,6 +67,25 @@ int findServer(request & req, virtualServer & virSerType , bool isDouble) {
 							lorR = 0;
 						}
 					}
+					// 策略二 : 找核心和内存使用比例高的服务器
+					// if (lorR == 0) {
+					// 	if ( (double)(i.second.lCore - virSerType.core) / (double)(i.second.core) / 2 
+					// 		< (double)(serverList[retServerId].lCore - virSerType.core) / (double)(serverList[retServerId].core) / 2 &&
+					// 		(double)(i.second.lRam - virSerType.ram) / (double)(i.second.ram)  / 2
+					// 		< (double)(serverList[retServerId].lRam - virSerType.ram) / (double)(serverList[retServerId].ram) / 2 ){
+
+					// 		retServerId = i.first;
+					// 		lorR = 0;
+					// 	}
+					// } else {
+					// 	if ( (double)(i.second.lCore - virSerType.core) / (double)(i.second.core) / 2 
+					// 		< (double)(serverList[retServerId].rCore - virSerType.core) / (double)(serverList[retServerId].core) / 2 &&
+					// 		(double)(i.second.lRam - virSerType.ram) / (double)(i.second.ram)  / 2
+					// 		< (double)(serverList[retServerId].rRam - virSerType.ram) / (double)(serverList[retServerId].ram) / 2 ){
+					// 		retServerId = i.first;
+					// 		lorR = 0;
+					// 	}
+					// }
 				}
 			}
 			if (i.second.rCore > virSerType.core && i.second.rRam > virSerType.ram) {
@@ -87,6 +106,25 @@ int findServer(request & req, virtualServer & virSerType , bool isDouble) {
 							lorR = 1;
 						}
 					}
+					// 策略二 : 找核心和内存使用比例高的服务器
+					// if (lorR == 0) {
+					// 	if ( (double)(i.second.rCore - virSerType.core) / (double)(i.second.core) / 2 
+					// 		< (double)(serverList[retServerId].lCore - virSerType.core) / (double)(serverList[retServerId].core) / 2 &&
+					// 		(double)(i.second.rRam - virSerType.ram) / (double)(i.second.ram)  / 2
+					// 		< (double)(serverList[retServerId].lRam - virSerType.ram) / (double)(serverList[retServerId].ram) / 2 ){
+
+					// 		retServerId = i.first;
+					// 		lorR = 1;
+					// 	}
+					// } else {
+					// 	if ( (double)(i.second.rCore - virSerType.core) / (double)(i.second.core) / 2 
+					// 		< (double)(serverList[retServerId].rCore - virSerType.core) / (double)(serverList[retServerId].core) / 2 &&
+					// 		(double)(i.second.rRam - virSerType.ram) / (double)(i.second.ram)  / 2
+					// 		< (double)(serverList[retServerId].rRam - virSerType.ram) / (double)(serverList[retServerId].ram) / 2 ){
+					// 		retServerId = i.first;
+					// 		lorR = 1;
+					// 	}
+					// }
 				}
 			}
 		}
@@ -115,6 +153,14 @@ int findServer(request & req, virtualServer & virSerType , bool isDouble) {
 					    	i.second.lRam + i.second.rRam < serverList[retServerId].lRam + serverList[retServerId].rRam ) {
 						retServerId = i.first;
 					}
+					// 策略二 : 找核心和内存使用比例高的服务器
+					// if ( (double)(i.second.lCore + i.second.rCore - virSerType.core) / (double)(i.second.core) 
+					// 		< (double)(serverList[retServerId].lCore + serverList[retServerId].rCore - virSerType.core) / (double)(serverList[retServerId].core) &&
+					// 	(double)(i.second.lRam + i.second.rRam - virSerType.ram) / (double)(i.second.ram) 
+					// 		< (double)(serverList[retServerId].lRam + serverList[retServerId].rRam - virSerType.ram) / (double)(serverList[retServerId].ram) ){
+
+					// 	retServerId = i.first;
+					// }
 				}
 			}
 		}
@@ -146,11 +192,11 @@ void buyServer(request & req, virtualServer & virSerType , bool isDouble) {
 
 			int nowCost = i.second.cost + i.second.dayCost * (T - req.day);
 			int oldCost = serverType[ans].cost + serverType[ans].dayCost * (T - req.day);
-			// 策略一 买总消耗最便宜的 13亿
+			// 策略一 买总消耗最便宜的 13亿 消耗越小大概率越匹配 产生的碎片可能无法利用
 			if (nowCost < oldCost) ans = i.first;
 
 			// 策略二 买单核心均价最便宜的 43亿
-			// if (nowCost / i.second.core < oldCost / serverType[ans].core) ans = i.first;
+			// if ((double)nowCost / (double)i.second.core < (double)oldCost / (double)serverType[ans].core) ans = i.first;
 
 			// 策略三 按照一天的量进行考虑
 		}
