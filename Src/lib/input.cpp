@@ -27,6 +27,8 @@ std::vector<std::vector<std::pair<int, int> > > CreateList; // T天 每天一个
 // 第一个参数代表虚拟机id, 第二个参数代表目标服务器id 第三个参数代表0左节点还是1右节点 , 如果是双节点虚拟机则是-1;
 std::vector<std::vector< moveMark > > moveList; 
 
+std::vector<std::pair<int, int> > serverRequest;
+
 
 void solveServerInput() {
     std::string s = "";
