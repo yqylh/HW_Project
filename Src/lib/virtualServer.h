@@ -1,5 +1,5 @@
-#ifndef __virtualServer
-#define __virtualServer
+#ifndef __virtualServer__
+#define __virtualServer__
 
 #include <string>
 

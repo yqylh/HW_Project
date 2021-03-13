@@ -1,5 +1,5 @@
-#ifndef __server
-#define __server
+#ifndef __server__
+#define __server__
 
 #include <string>
 

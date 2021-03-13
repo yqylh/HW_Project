@@ -5,10 +5,10 @@
 #include <map>
 #include <unordered_map>
 #include <sstream>
-#include "server.cpp"
-#include "virtualServer.cpp"
-#include "request.cpp"
-#include "moveMark.cpp"
+#include "server.h"
+#include "virtualServer.h"
+#include "request.h"
+#include "moveMark.h"
 
 int N; // 服务器类型数量
 std::unordered_map<std::string, server> serverType; // 服务器类型数组

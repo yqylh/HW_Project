@@ -1,3 +1,5 @@
+#ifndef __output__
+#define __output__
 #include "input.cpp"
 
 /*
@@ -53,3 +55,4 @@ void output() {
 		}
 	}
 }
+#endif

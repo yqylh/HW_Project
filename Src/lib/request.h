@@ -1,5 +1,5 @@
-#ifndef __request
-#define __request
+#ifndef __request__
+#define __request__
 
 #include <string>
 
