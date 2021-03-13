@@ -54,16 +54,35 @@ void moveAction(moveMark x, int day) {
 // 迁移策略
 void move(int day) {
     int maxMoveNum = virtualServerList.size() * 5 / 1000;
+    // 假设服务器两核心的利用率相似 不会有过大差异 所以不拆分节点进行分析了
     // 策略一 : 把利用率低的服务器上的虚拟机迁移到利用率高的服务器上
-    // 先只考虑双核心虚拟机
-    std::vector<rateSolve> rate; // 数值越小利用率越高;
+    // std::vector<rateSolve> rate; // 数值越小利用率越高;
+    // for (auto & i : serverList) {
+    //     rate.push_back(rateSolve(i.first, (double)(i.second.lCore + i.second.rCore) / (double)(i.second.core) + (double)(i.second.lRam + i.second.rRam) / (double)(i.second.ram)));
+    // }
+    // std::sort(rate.begin(), rate.end()); // begin是利用率最高的, rbegin是利用率最低的
+    // for (auto & i : virtualServerList) {
+    //     rate[i.second.serverId].virSerId.push_back(i.first);
+    // }
+    // // 从利用率低到高去把服务器上的虚拟机id加到list里面
+    // std::vector<int> canMoveList;
+    // for (auto i = rate.rbegin(); i != rate.rend() && maxMoveNum; i++) {
+    //     for (auto & j : i->virSerId) if (maxMoveNum) {
+    //         canMoveList.push_back(j);
+    //         maxMoveNum--;
+    //     }
+    // }
+
+    // 策略二 : 把剩余空间大的服务器上的虚拟机迁移到剩余空间小的服务器上
+    std::vector<rateSolve> rate; // 数值越大空间越高;
     for (auto & i : serverList) {
-        rate.push_back(rateSolve(i.first, (double)(i.second.lCore + i.second.rCore) / (double)(i.second.core) + (double)(i.second.lRam + i.second.lRam) / (double)(i.second.ram)));
+        rate.push_back(rateSolve(i.first, i.second.lCore + i.second.rCore + i.second.lRam + i.second.rRam ));
     }
-    std::sort(rate.begin(), rate.end()); // begin是利用率最高的, rbegin是利用率最低的
-    for (auto & i : virtualServerList) if (i.second.isDouble == 1) {
+    std::sort(rate.begin(), rate.end()); // begin是剩余空间最小的, rbegin是剩余空间最大的
+    for (auto & i : virtualServerList) {
         rate[i.second.serverId].virSerId.push_back(i.first);
     }
+    // 从剩余空间从大到小去把服务器上的虚拟机id加到list里面
     std::vector<int> canMoveList;
     for (auto i = rate.rbegin(); i != rate.rend() && maxMoveNum; i++) {
         for (auto & j : i->virSerId) if (maxMoveNum) {
@@ -71,73 +90,31 @@ void move(int day) {
             maxMoveNum--;
         }
     }
+
+    
+    // 对于每个可以移动的虚拟机 移动他
     for (auto & i : canMoveList) {
         for (auto j = rate.begin(); j != rate.end(); j++) {
             auto &virSer = virtualServerList[i];
             auto &Ser = serverList[j->id];
-            if (Ser.lCore > virSer.core / 2 && Ser.lRam > virSer.ram / 2 && Ser.rCore > virSer.core / 2 && Ser.rRam > virSer.ram / 2 && virSer.serverId != Ser.id) {
-                // std::cout << i << " " <<  virSer.id << "\n";
-                moveAction(moveMark(virSer.id, Ser.id, -1), day);
-                break;
+            if (virSer.isDouble == 1) {
+                if (Ser.lCore > virSer.core / 2 && Ser.lRam > virSer.ram / 2 && Ser.rCore > virSer.core / 2 && Ser.rRam > virSer.ram / 2 && virSer.serverId != Ser.id) {
+                    moveAction(moveMark(virSer.id, Ser.id, -1), day);
+                    break;
+                }
+            } else {
+                if (Ser.lCore > virSer.core && Ser.lRam > virSer.ram) {
+                    if (Ser.id == virSer.serverId && virSer.where == 0) continue;
+                    moveAction(moveMark(virSer.id, Ser.id, 0), day);
+                    break;
+                } else if (Ser.rCore > virSer.core && Ser.rRam > virSer.ram) {
+                    if (Ser.id == virSer.serverId && virSer.where == 1) continue;
+                    moveAction(moveMark(virSer.id, Ser.id, 1), day);
+                    break;
+                }
             }
         }
     }
-
-    // 策略零 : 能迁移就迁移
-    // for (auto & i : virtualServerList) if (maxMoveNum) {
-    //     auto & before = serverList[i.second.serverId];
-
-    //     int moveServerId; // 返回变量
-    //     moveServerId = -1;
-    //     bool lorR = 0; // 0代表左边 1代表右边
-
-    //     if (i.second.isDouble == 0) {
-    //         for (auto & j : serverList) {
-    //             if (j.second.lCore > i.second.core && j.second.lRam > i.second.ram ) {
-    //                 if (i.second.serverId == j.first && i.second.where == 0) continue;
-    //                 // 策略零
-    //                 if (moveServerId == -1) {
-    //                     moveServerId = j.first;
-    //                     lorR = 0;
-    //                 } else {
-    //                     // 策略一
-    //                 }
-    //             }
-    //             if (j.second.rCore > i.second.core && j.second.rRam > i.second.ram ) {
-    //                 if (i.second.serverId == j.first && i.second.where == 1) continue;
-    //                 // 策略零
-    //                 if (moveServerId == -1) {
-    //                     moveServerId = j.first;
-    //                     lorR = 1;
-    //                 } else {
-    //                     // 策略一
-    //                 }
-    //             }
-    //         }
-    //         if (moveServerId != -1) {
-    //             moveAction(moveMark(i.first, moveServerId, lorR), day);
-    //             maxMoveNum--;
-    //         }
-    //     } else {
-    //         // 策略
-    //         for (auto & j : serverList) {
-    //             if (j.second.lCore > i.second.core && j.second.lRam > i.second.ram &&
-    //                 j.second.rCore > i.second.core && j.second.rRam > i.second.ram && i.second.serverId != j.first) {
-    //                 // 策略零
-    //                 if (moveServerId == -1) {
-    //                     moveServerId = j.first;
-    //                 } else {
-    //                     // 策略一
-    //                 }
-    //             }
-    //         }
-    //         if (moveServerId != -1) {
-    //             moveAction(moveMark(i.first, moveServerId, -1), day);
-    //             maxMoveNum--;
-    //         }
-    //     }
-    //     break;
-    // }
 }
 
 #endif
