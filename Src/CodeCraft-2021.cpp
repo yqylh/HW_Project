@@ -111,11 +111,11 @@ int findServer(request & req, virtualServer & virSerType , bool isDouble) {
 				if (retServerId == -1) retServerId = i.first;
 				else {
 					// 策略一 : 找核心和内存都尽量满的服务器
-					if (i.second.lCore + i.second.rCore < serverList[retServerId].lCore + serverList[retServerId].rCore && 
+					if (i.second.lCore + i.second.rCore < serverList[retServerId].lCore + serverList[retServerId].rCore &&
 					    	i.second.lRam + i.second.rRam < serverList[retServerId].lRam + serverList[retServerId].rRam ) {
 						retServerId = i.first;
 					}
-				}	
+				}
 			}
 		}
 		if (retServerId != -1) {
@@ -135,7 +135,7 @@ int findServer(request & req, virtualServer & virSerType , bool isDouble) {
 // 购买一台可以放得下的服务器
 void buyServer(request & req, virtualServer & virSerType , bool isDouble) {
 	std::string ans = "";
-	for (auto & i : serverType) { 
+	for (auto & i : serverType) {
 		if (i.second.core / 2 > virSerType.core && i.second.ram / 2 > virSerType.ram) {
 			if (ans == "") {
 				ans = i.first;
@@ -148,9 +148,11 @@ void buyServer(request & req, virtualServer & virSerType , bool isDouble) {
 			int oldCost = serverType[ans].cost + serverType[ans].dayCost * (T - req.day);
 			// 策略一 买总消耗最便宜的 13亿
 			if (nowCost < oldCost) ans = i.first;
-			
+
 			// 策略二 买单核心均价最便宜的 43亿
 			// if (nowCost / i.second.core < oldCost / serverType[ans].core) ans = i.first;
+
+			// 策略三 按照一天的量进行考虑
 		}
 	}
 	if (isDouble == 0) {
@@ -260,7 +262,7 @@ void move(int day) {
 					before.lRam += i.second.ram / 2;
 					before.rCore += i.second.core / 2;
 					before.rRam += i.second.ram / 2;
-					
+
 					i.second.serverId = j.first;
 					moveList[day].push_back(moveMark(i.first, j.first, -1));
 					maxMoveNum--;
@@ -268,8 +270,6 @@ void move(int day) {
 				}
 			}
 		}
-		//  测试用
-		break;
 	}
 }
 

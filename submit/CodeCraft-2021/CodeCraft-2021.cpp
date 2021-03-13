@@ -144,8 +144,8 @@ void buyServer(request & req, virtualServer & virSerType , bool isDouble) {
 			// 策略零 没有策略
 			// ans = i.first;
 
-			int nowCost = i.second.cost + i.second.dayCost * (T - req.day);
-			int oldCost = serverType[ans].cost + serverType[ans].dayCost * (T - req.day);
+			int nowCost = i.second.cost  /*+ i.second.dayCost * (T - req.day)*/;
+			int oldCost = serverType[ans].cost  /*+ serverType[ans].dayCost * (T - req.day)*/;
 			// 策略一 买总消耗最便宜的 13亿
 			if (nowCost < oldCost) ans = i.first;
 			
