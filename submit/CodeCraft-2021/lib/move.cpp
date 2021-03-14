@@ -54,17 +54,63 @@ void moveAction(moveMark x, int day) {
 // 迁移策略
 void move(int day) {
     int maxMoveNum = virtualServerList.size() * 5 / 1000;
-    // 假设服务器两核心的利用率相似 不会有过大差异 所以不拆分节点进行分析了
+    
     // 策略一 : 把利用率低的服务器上的虚拟机迁移到利用率高的服务器上
-    std::vector<rateSolve> rate; // 数值越小利用率越高;
+    // std::vector<rateSolve> rate (serverList.size()); // 数值越小利用率越高;
+    // for (auto & i : serverList) {
+    //     rate[i.first] = rateSolve(i.first, (double)(i.second.lCore + i.second.rCore) / (double)(i.second.core) + (double)(i.second.lRam + i.second.rRam) / (double)(i.second.ram));
+    // }
+    // for (auto & i : virtualServerList) {
+    //     rate[i.second.serverId].virSerIds.push_back(i.first);
+    // }
+
+    // 策略二 : 把剩余空间大的服务器上的虚拟机迁移到剩余空间小的服务器上
+    std::vector<rateSolve> rate(serverList.size()); // 数值越大空间越高;
     for (auto & i : serverList) {
-        rate.push_back(rateSolve(i.first, (double)(i.second.lCore + i.second.rCore) / (double)(i.second.core) + (double)(i.second.lRam + i.second.rRam) / (double)(i.second.ram)));
+        rate[i.first] = rateSolve(i.first, i.second.lCore + i.second.rCore + i.second.lRam + i.second.rRam );
     }
-    std::sort(rate.begin(), rate.end()); // begin是利用率最高的, rbegin是利用率最低的
     for (auto & i : virtualServerList) {
         rate[i.second.serverId].virSerIds.push_back(i.first);
     }
-    // 从利用率低到高去把服务器上的虚拟机id加到list里面
+
+   // 策略一_3 : 把利用率低的服务器上的虚拟机迁移到利用率高的服务器上
+    // std::vector<rateSolve> rate (serverList.size() * 3 ); // 数值越小利用率越高;
+    // for (auto & i : serverList) {
+    //     rate[i.first * 3] = rateSolve(i.first, (double)(i.second.lCore + i.second.rCore) / (double)(i.second.core) + (double)(i.second.lRam + i.second.rRam) / (double)(i.second.ram));
+    //     rate[i.first * 3 + 1] = rateSolve(i.first, (double)(i.second.lCore) / (double)(i.second.core) / 2 + (double)(i.second.lRam) / (double)(i.second.ram) / 2 , 0);
+    //     rate[i.first * 3 + 2] = rateSolve(i.first, (double)(i.second.rCore) / (double)(i.second.core) / 2 + (double)(i.second.rRam) / (double)(i.second.ram) / 2 , 1);
+    // }
+    // for (auto & i : virtualServerList) {
+    //     if (i.second.isDouble == 1) {
+    //         rate[i.second.serverId * 3].virSerIds.push_back(i.first);
+    //     } else {
+    //         if (i.second.where == 0) {
+    //             rate[i.second.serverId * 3 + 1].virSerIds.push_back(i.first);
+    //         } else {
+    //             rate[i.second.serverId * 3 + 2].virSerIds.push_back(i.first);
+    //         }
+    //     }
+    // }
+    // 策略二_3 : 把剩余空间大的服务器上的虚拟机迁移到剩余空间小的服务器上
+    // std::vector<rateSolve> rate(serverList.size() * 3); // 数值越大空间越高;
+    // for (auto & i : serverList) {
+    //     rate[i.first * 3] = rateSolve(i.first, i.second.lCore + i.second.rCore + i.second.lRam + i.second.rRam );
+    //     rate[i.first * 3 + 1] = rateSolve(i.first, i.second.lCore + i.second.lRam );
+    //     rate[i.first * 3 + 2] = rateSolve(i.first, i.second.rCore + i.second.rRam );
+    // }
+    // for (auto & i : virtualServerList) {
+    //     if (i.second.isDouble == 1) {
+    //         rate[i.second.serverId * 3].virSerIds.push_back(i.first);
+    //     } else {
+    //         if (i.second.where == 0) {
+    //             rate[i.second.serverId * 3 + 1].virSerIds.push_back(i.first);
+    //         } else {
+    //             rate[i.second.serverId * 3 + 2].virSerIds.push_back(i.first);
+    //         }
+    //     }
+    // }
+    std::sort(rate.begin(), rate.end()); // begin是剩余空间最小的, rbegin是剩余空间最大的
+    // 从剩余空间从大到小去把服务器上的虚拟机id加到list里面
     std::vector<int> canMoveList;
     for (auto i = rate.rbegin(); i != rate.rend() && maxMoveNum; i++) {
         for (auto & j : i->virSerIds) if (maxMoveNum) {
@@ -73,27 +119,10 @@ void move(int day) {
         }
     }
 
-    // 策略二 : 把剩余空间大的服务器上的虚拟机迁移到剩余空间小的服务器上
-    // std::vector<rateSolve> rate; // 数值越大空间越高;
-    // for (auto & i : serverList) {
-    //     rate.push_back(rateSolve(i.first, i.second.lCore + i.second.rCore + i.second.lRam + i.second.rRam ));
-    // }
-    // std::sort(rate.begin(), rate.end()); // begin是剩余空间最小的, rbegin是剩余空间最大的
-    // for (auto & i : virtualServerList) {
-    //     rate[i.second.serverId].virSerIds.push_back(i.first);
-    // }
-    // // 从剩余空间从大到小去把服务器上的虚拟机id加到list里面
-    // std::vector<int> canMoveList;
-    // for (auto i = rate.rbegin(); i != rate.rend() && maxMoveNum; i++) {
-    //     for (auto & j : i->virSerIds) if (maxMoveNum) {
-    //         canMoveList.push_back(j);
-    //         maxMoveNum--;
-    //     }
-    // }
     auto cmp = [&](int & A, int & B) {
-        return virtualServerList[A].core + virtualServerList[A].ram < virtualServerList[B].core + virtualServerList[B].ram;
+        return virtualServerList[A].core + virtualServerList[A].ram > virtualServerList[B].core + virtualServerList[B].ram;
     };
-    std::sort(canMoveList.begin(), canMoveList.end(), cmp);
+    std::sort(canMoveList.begin(), canMoveList.end(), cmp);    
     
     // 对于每个可以移动的虚拟机 移动他
     for (auto & i : canMoveList) {
