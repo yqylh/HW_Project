@@ -90,7 +90,10 @@ void move(int day) {
     //         maxMoveNum--;
     //     }
     // }
-
+    auto cmp = [&](int & A, int & B) {
+        return virtualServerList[A].core + virtualServerList[A].ram > virtualServerList[B].core + virtualServerList[B].ram;
+    };
+    std::sort(canMoveList.begin(), canMoveList.end(), cmp);
     
     // 对于每个可以移动的虚拟机 移动他
     for (auto & i : canMoveList) {
