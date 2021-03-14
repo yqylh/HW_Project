@@ -62,12 +62,12 @@ void move(int day) {
     // }
     // std::sort(rate.begin(), rate.end()); // begin是利用率最高的, rbegin是利用率最低的
     // for (auto & i : virtualServerList) {
-    //     rate[i.second.serverId].virSerId.push_back(i.first);
+    //     rate[i.second.serverId].virSerIds.push_back(i.first);
     // }
     // // 从利用率低到高去把服务器上的虚拟机id加到list里面
     // std::vector<int> canMoveList;
     // for (auto i = rate.rbegin(); i != rate.rend() && maxMoveNum; i++) {
-    //     for (auto & j : i->virSerId) if (maxMoveNum) {
+    //     for (auto & j : i->virSerIds) if (maxMoveNum) {
     //         canMoveList.push_back(j);
     //         maxMoveNum--;
     //     }
@@ -80,12 +80,12 @@ void move(int day) {
     }
     std::sort(rate.begin(), rate.end()); // begin是剩余空间最小的, rbegin是剩余空间最大的
     for (auto & i : virtualServerList) {
-        rate[i.second.serverId].virSerId.push_back(i.first);
+        rate[i.second.serverId].virSerIds.push_back(i.first);
     }
     // 从剩余空间从大到小去把服务器上的虚拟机id加到list里面
     std::vector<int> canMoveList;
     for (auto i = rate.rbegin(); i != rate.rend() && maxMoveNum; i++) {
-        for (auto & j : i->virSerId) if (maxMoveNum) {
+        for (auto & j : i->virSerIds) if (maxMoveNum) {
             canMoveList.push_back(j);
             maxMoveNum--;
         }

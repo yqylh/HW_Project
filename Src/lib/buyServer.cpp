@@ -12,8 +12,6 @@ void buyServer(request & req, virtualServer & virSerType , bool isDouble) {
     //             serverRequest[i.day].first += virtualServerType[i.name].core;
     //             serverRequest[i.day].second += virtualServerType[i.name].ram;
     //         } else {
-    //             // 对于删除 有可能会有今天创建今天删除的
-    //             // 记录峰值是不是更好 ? 实际加了删除一点都没变
     //             if (virtualServerList.count(i.id)) {
     //                 serverRequest[i.day].first -= virtualServerList[i.id].core;
     //                 serverRequest[i.day].second -= virtualServerList[i.id].ram;
@@ -21,9 +19,11 @@ void buyServer(request & req, virtualServer & virSerType , bool isDouble) {
     //         }
     //     }
     // }
-    // if (serverRequest[req.day].first < virSerType.core) serverRequest[req.day].first = virSerType.core;
-    // if (serverRequest[req.day].second < virSerType.ram) serverRequest[req.day].second = virSerType.ram;
-
+    // if (serverRequest[req.day].first < virSerType.core * (virSerType.isDouble == 1 ? 1 : 2)) serverRequest[req.day].first = virSerType.core* (virSerType.isDouble == 1 ? 1 : 2);
+    // if (serverRequest[req.day].second < virSerType.ram * (virSerType.isDouble == 1 ? 1 : 2)) serverRequest[req.day].second = virSerType.ram* (virSerType.isDouble == 1 ? 1 : 2);
+    
+    // // if (serverRequest[req.day].first > virSerType.core * 2) serverRequest[req.day].first = virSerType.core * 2;
+    // // // if (serverRequest[req.day].second > virSerType.ram * 2) serverRequest[req.day].second = virSerType.ram * 2;
     // std::string ans = "";
     // bool bigger = 0; // 1->  ans比需求量大 0->ans比需求量小
     // for (auto & i : serverType) {
@@ -55,7 +55,7 @@ void buyServer(request & req, virtualServer & virSerType , bool isDouble) {
     // 策略一和二
     std::string ans = "";
     for (auto & i : serverType) {
-        if (i.second.core / 2 > virSerType.core && i.second.ram / 2 > virSerType.ram) {
+        if (i.second.core / 2 > virSerType.core * 2 && i.second.ram / 2 > virSerType.ram * 2) {
             if (ans == "") {
                 ans = i.first;
                 continue;
