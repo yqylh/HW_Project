@@ -56,33 +56,15 @@ void move(int day) {
     int maxMoveNum = virtualServerList.size() * 5 / 1000;
     // 假设服务器两核心的利用率相似 不会有过大差异 所以不拆分节点进行分析了
     // 策略一 : 把利用率低的服务器上的虚拟机迁移到利用率高的服务器上
-    // std::vector<rateSolve> rate; // 数值越小利用率越高;
-    // for (auto & i : serverList) {
-    //     rate.push_back(rateSolve(i.first, (double)(i.second.lCore + i.second.rCore) / (double)(i.second.core) + (double)(i.second.lRam + i.second.rRam) / (double)(i.second.ram)));
-    // }
-    // std::sort(rate.begin(), rate.end()); // begin是利用率最高的, rbegin是利用率最低的
-    // for (auto & i : virtualServerList) {
-    //     rate[i.second.serverId].virSerIds.push_back(i.first);
-    // }
-    // // 从利用率低到高去把服务器上的虚拟机id加到list里面
-    // std::vector<int> canMoveList;
-    // for (auto i = rate.rbegin(); i != rate.rend() && maxMoveNum; i++) {
-    //     for (auto & j : i->virSerIds) if (maxMoveNum) {
-    //         canMoveList.push_back(j);
-    //         maxMoveNum--;
-    //     }
-    // }
-
-    // 策略二 : 把剩余空间大的服务器上的虚拟机迁移到剩余空间小的服务器上
-    std::vector<rateSolve> rate; // 数值越大空间越高;
+    std::vector<rateSolve> rate; // 数值越小利用率越高;
     for (auto & i : serverList) {
-        rate.push_back(rateSolve(i.first, i.second.lCore + i.second.rCore + i.second.lRam + i.second.rRam ));
+        rate.push_back(rateSolve(i.first, (double)(i.second.lCore + i.second.rCore) / (double)(i.second.core) + (double)(i.second.lRam + i.second.rRam) / (double)(i.second.ram)));
     }
-    std::sort(rate.begin(), rate.end()); // begin是剩余空间最小的, rbegin是剩余空间最大的
+    std::sort(rate.begin(), rate.end()); // begin是利用率最高的, rbegin是利用率最低的
     for (auto & i : virtualServerList) {
         rate[i.second.serverId].virSerIds.push_back(i.first);
     }
-    // 从剩余空间从大到小去把服务器上的虚拟机id加到list里面
+    // 从利用率低到高去把服务器上的虚拟机id加到list里面
     std::vector<int> canMoveList;
     for (auto i = rate.rbegin(); i != rate.rend() && maxMoveNum; i++) {
         for (auto & j : i->virSerIds) if (maxMoveNum) {
@@ -90,6 +72,24 @@ void move(int day) {
             maxMoveNum--;
         }
     }
+
+    // 策略二 : 把剩余空间大的服务器上的虚拟机迁移到剩余空间小的服务器上
+    // std::vector<rateSolve> rate; // 数值越大空间越高;
+    // for (auto & i : serverList) {
+    //     rate.push_back(rateSolve(i.first, i.second.lCore + i.second.rCore + i.second.lRam + i.second.rRam ));
+    // }
+    // std::sort(rate.begin(), rate.end()); // begin是剩余空间最小的, rbegin是剩余空间最大的
+    // for (auto & i : virtualServerList) {
+    //     rate[i.second.serverId].virSerIds.push_back(i.first);
+    // }
+    // // 从剩余空间从大到小去把服务器上的虚拟机id加到list里面
+    // std::vector<int> canMoveList;
+    // for (auto i = rate.rbegin(); i != rate.rend() && maxMoveNum; i++) {
+    //     for (auto & j : i->virSerIds) if (maxMoveNum) {
+    //         canMoveList.push_back(j);
+    //         maxMoveNum--;
+    //     }
+    // }
 
     
     // 对于每个可以移动的虚拟机 移动他
