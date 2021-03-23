@@ -106,7 +106,7 @@ int findServer(request & req, virtualServer & virSerType , bool isDouble) {
             virtualServerList[req.id].serverId = retServerId;
             virtualServerList[req.id].where = lorR;
             virtualServerList[req.id].id = req.id;
-            recordCreate(req.day , retServerId , lorR);
+            recordCreate(req.day , retServerId , lorR, req.order);
         }
     } else {
         for (auto & i : serverList) {
@@ -131,7 +131,7 @@ int findServer(request & req, virtualServer & virSerType , bool isDouble) {
             virtualServerList[req.id] = virtualServerType[req.name];
             virtualServerList[req.id].serverId = x.id;
             virtualServerList[req.id].id = req.id;
-            recordCreate(req.day , retServerId, -1);
+            recordCreate(req.day , retServerId, -1, req.order);
         }
     }
     return retServerId;

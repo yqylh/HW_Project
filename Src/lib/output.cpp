@@ -46,11 +46,12 @@ void output() {
         }
 
         // 输出虚拟机的配置 , 需要根据map做一个实际服务器id的转换
+        std::sort(CreateList[i].begin(), CreateList[i].end());
         for (auto & j : CreateList[i]) {
-            if (j.second == -1) {
-                printf("(%d)\n" , virtualId_RealId[j.first]);
+            if (j._type == -1) {
+                printf("(%d)\n" , virtualId_RealId[j._serverId]);
             } else {
-                printf("(%d, %c)\n" , virtualId_RealId[j.first] , (j.second == 0 ? 'A' : 'B')  );
+                printf("(%d, %c)\n" , virtualId_RealId[j._serverId] , (j._type == 0 ? 'A' : 'B')  );
             }
         }
     }

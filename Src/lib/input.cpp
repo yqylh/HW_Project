@@ -21,7 +21,22 @@ int T; // T天的用户数据
 std::vector<request> requestList; // 请求列表
 int serverId = 0; // 服务器id
 std::vector<std::vector<std::string> > BuyList; // T天 每天一个List 存需要买的服务器的名字
-std::vector<std::vector<std::pair<int, int> > > CreateList; // T天 每天一个List 存的是虚拟机实际存储的位置
+
+struct CreateType{
+    int _serverId;
+    int _type;
+    int order;
+    CreateType() {
+        _serverId = 0;
+        _type = 0;
+        order = 0;
+    }
+    CreateType(int _serverId, int _type, int order) : _serverId(_serverId), _type(_type), order(order) {}
+    inline bool friend operator< (const CreateType &A, const CreateType &B) {
+        return A.order < B.order;
+    }
+};
+std::vector<std::vector< CreateType > > CreateList; // T天 每天一个List 存的是虚拟机实际存储的位置
 
 // T天 每天一个List 存的是当天虚拟机迁移的序列 
 // 第一个参数代表虚拟机id, 第二个参数代表目标服务器id 第三个参数代表0左节点还是1右节点 , 如果是双节点虚拟机则是-1;

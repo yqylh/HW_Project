@@ -86,7 +86,7 @@ void buyServer(request & req, virtualServer & virSerType , bool isDouble) {
         virtualServerList[req.id].where = 0;
         virtualServerList[req.id].id = req.id;
         recordBuy(temp.createDay , temp.name);
-        recordCreate(req.day , temp.id, 0);
+        recordCreate(req.day , temp.id, 0, req.order);
     } else {
         serverList[serverId] = serverType[ans];
         auto &temp = serverList[serverId];
@@ -104,6 +104,6 @@ void buyServer(request & req, virtualServer & virSerType , bool isDouble) {
         virtualServerList[req.id].serverId = temp.id;
         virtualServerList[req.id].id = req.id;
         recordBuy(temp.createDay , temp.name);
-        recordCreate(req.day , temp.id , -1);
+        recordCreate(req.day , temp.id , -1, req.order);
     }
 }
