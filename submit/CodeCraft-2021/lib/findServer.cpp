@@ -8,13 +8,15 @@ int findServer(request & req, virtualServer & virSerType , bool isDouble) {
     bool lorR = 0; // 0代表左边 1代表右边
     if (isDouble == 0) {
         for (auto & i : serverList) { // 查找可以塞的下的
-            if (i.second.lCore > virSerType.core && i.second.lRam > virSerType.ram) {
+            if (i.second.lCore >= virSerType.core && i.second.lRam >= virSerType.ram) {
                 // 策略零 : 没有策略
                 if (retServerId == -1) {
                     retServerId = i.first;
                     lorR = 0;
                 } else {
                     // 策略一 : 找核心和内存都尽量满的服务器
+                    if (i.second.lCore + i.second.rCore + i.second.lRam + i.second.rRam >
+                        serverList[retServerId].lCore + serverList[retServerId].rCore + serverList[retServerId].lRam + serverList[retServerId].rRam ) continue;
                     if (lorR == 0) {
                         if (i.second.lCore + i.second.lRam < serverList[retServerId].lCore + serverList[retServerId].lRam) {
                             retServerId = i.first;
@@ -26,29 +28,16 @@ int findServer(request & req, virtualServer & virSerType , bool isDouble) {
                             lorR = 0;
                         }
                     }
-                    // 策略二 : 找核心和内存使用比例高的服务器
-                    // if (lorR == 0) {
-                    //     if ( (double)(i.second.lCore - virSerType.core) / (double)(i.second.core) / 2 + (double)(i.second.lRam - virSerType.ram) / (double)(i.second.ram)  / 2
-                    //         < (double)(serverList[retServerId].lCore - virSerType.core) / (double)(serverList[retServerId].core) / 2 +  (double)(serverList[retServerId].lRam - virSerType.ram) / (double)(serverList[retServerId].ram) / 2 ){
-
-                    //         retServerId = i.first;
-                    //         lorR = 0;
-                    //     }
-                    // } else {
-                    //     if ( (double)(i.second.lCore - virSerType.core) / (double)(i.second.core) / 2 +  (double)(i.second.lRam - virSerType.ram) / (double)(i.second.ram)  / 2
-                    //         < (double)(serverList[retServerId].rCore - virSerType.core) / (double)(serverList[retServerId].core) / 2 + (double)(serverList[retServerId].rRam - virSerType.ram) / (double)(serverList[retServerId].ram) / 2 ){
-                    //         retServerId = i.first;
-                    //         lorR = 0;
-                    //     }
-                    // }
                 }
             }
-            if (i.second.rCore > virSerType.core && i.second.rRam > virSerType.ram) {
+            if (i.second.rCore >= virSerType.core && i.second.rRam >= virSerType.ram) {
                 // 策略零 : 没有策略
                 if (retServerId == -1) {
                     retServerId = i.first;
                     lorR = 1;
                 } else {
+                    if (i.second.lCore + i.second.rCore + i.second.lRam + i.second.rRam >
+                        serverList[retServerId].lCore + serverList[retServerId].rCore + serverList[retServerId].lRam + serverList[retServerId].rRam ) continue;
                     // 策略一 : 找核心和内存都尽量满的服务器
                     if (lorR == 0) {
                         if (i.second.rCore +  i.second.rRam < serverList[retServerId].lCore + serverList[retServerId].lRam) {
@@ -61,23 +50,49 @@ int findServer(request & req, virtualServer & virSerType , bool isDouble) {
                             lorR = 1;
                         }
                     }
-                    // 策略二 : 找核心和内存使用比例高的服务器
-                    // if (lorR == 0) {
-                    //     if ( (double)(i.second.rCore - virSerType.core) / (double)(i.second.core) / 2 + (double)(i.second.rRam - virSerType.ram) / (double)(i.second.ram)  / 2
-                    //         < (double)(serverList[retServerId].lCore - virSerType.core) / (double)(serverList[retServerId].core) / 2 + (double)(serverList[retServerId].lRam - virSerType.ram) / (double)(serverList[retServerId].ram) / 2 ){
-                    //         retServerId = i.first;
-                    //         lorR = 1;
-                    //     }
-                    // } else {
-                    //     if ( (double)(i.second.rCore - virSerType.core) / (double)(i.second.core) / 2 + (double)(i.second.rRam - virSerType.ram) / (double)(i.second.ram)  / 2
-                    //         < (double)(serverList[retServerId].rCore - virSerType.core) / (double)(serverList[retServerId].core) / 2 +  (double)(serverList[retServerId].rRam - virSerType.ram) / (double)(serverList[retServerId].ram) / 2 ){
-                    //         retServerId = i.first;
-                    //         lorR = 1;
-                    //     }
-                    // }
                 }
             }
         }
+
+        // for (auto & i : serverList) {
+        //     // 查找可以塞的下的
+        //     if ( (i.second.lCore >= virSerType.core && i.second.lRam >= virSerType.ram) || (i.second.rCore >= virSerType.core && i.second.rRam >= virSerType.ram)) {
+        //         if (retServerId == -1) {
+        //             retServerId = i.first;
+        //             if (i.second.lCore >= virSerType.core && i.second.lRam >= virSerType.ram) {
+        //                 if (i.second.rCore >= virSerType.core && i.second.rRam >= virSerType.ram ) {
+        //                     if (i.second.lCore + i.second.lRam > i.second.rCore + i.second.rRam) {
+        //                         lorR = 1;
+        //                     } else {
+        //                         lorR = 0;
+        //                     }
+        //                 } else {
+        //                     lorR = 0;
+        //                 }
+        //             } else {
+        //                 lorR = 1;
+        //             }
+        //             continue;
+        //         }
+        //         if (i.second.lCore + i.second.rCore + i.second.lRam + i.second.rRam >= serverList[retServerId].lCore + serverList[retServerId].rCore + serverList[retServerId].lRam + serverList[retServerId].rRam ) continue;
+
+        //         retServerId = i.first;
+        //         if (i.second.lCore >= virSerType.core && i.second.lRam >= virSerType.ram) {
+        //             if (i.second.rCore >= virSerType.core && i.second.rRam >= virSerType.ram ) {
+        //                 if (i.second.lCore + i.second.lRam > i.second.rCore + i.second.rRam) {
+        //                     lorR = 1;
+        //                 } else {
+        //                     lorR = 0;
+        //                 }
+        //             } else {
+        //                 lorR = 0;
+        //             }
+        //         } else {
+        //             lorR = 1;
+        //         }
+        //     }
+        // }
+
         if (retServerId != -1) {
             auto &x = serverList[retServerId];
             if (lorR == 0) {
@@ -95,21 +110,15 @@ int findServer(request & req, virtualServer & virSerType , bool isDouble) {
         }
     } else {
         for (auto & i : serverList) {
-            if (i.second.lCore > virSerType.core && i.second.lRam > virSerType.ram && i.second.rCore > virSerType.core && i.second.rRam > virSerType.ram) {
+            if (i.second.lCore >= virSerType.core / 2 && i.second.lRam >= virSerType.ram / 2 && i.second.rCore >= virSerType.core / 2 && i.second.rRam >= virSerType.ram / 2) {
                 // 策略零
                 if (retServerId == -1) retServerId = i.first;
                 else {
                     // 策略一 : 找核心和内存都尽量满的服务器
-                    if (i.second.lCore + i.second.rCore + i.second.lRam + i.second.rRam < 
+                    if (i.second.lCore + i.second.rCore + i.second.lRam + i.second.rRam <
                         serverList[retServerId].lCore + serverList[retServerId].rCore + serverList[retServerId].lRam + serverList[retServerId].rRam ) {
                         retServerId = i.first;
                     }
-                    // 策略二 : 找核心和内存使用比例高的服务器
-                    // if ( (double)(i.second.lCore + i.second.rCore - virSerType.core) / (double)(i.second.core) + (double)(i.second.lRam + i.second.rRam - virSerType.ram) / (double)(i.second.ram) 
-                    //         < (double)(serverList[retServerId].lCore + serverList[retServerId].rCore - virSerType.core) / (double)(serverList[retServerId].core) + (double)(serverList[retServerId].lRam + serverList[retServerId].rRam - virSerType.ram) / (double)(serverList[retServerId].ram) ){
-
-                    //     retServerId = i.first;
-                    // }
                 }
             }
         }
