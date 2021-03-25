@@ -67,7 +67,9 @@ void move(int day) {
     std::sort(rate.begin(), rate.end()); // begin是剩余空间最小的, rbegin是剩余空间最大的
     // 从剩余空间从大到小去把服务器上的虚拟机id加到list里面
     std::vector<int> canMoveList;
-    for (auto i = rate.rbegin(); i != rate.rend() && maxMoveNum; i++) {
+    // int dontCareLess = rate.size() * 0.8;
+    for (auto i = rate.rbegin(); i != rate.rend() && maxMoveNum /*&& dontCareLess*/; i++/* , dontCareLess--*/) {
+        if ((double)(i->rate) / ((double)serverList[i->id].core + serverList[i->id].ram) > 0.8) continue;
         for (auto & j : i->virSerIds) if (maxMoveNum) {
             canMoveList.push_back(j);
             maxMoveNum--;
