@@ -5,11 +5,13 @@
 #include <map>
 #include <unordered_map>
 #include <sstream>
+#include <climits>
 #include <algorithm>
 #include "server.h"
 #include "virtualServer.h"
 #include "request.h"
 #include "moveMark.h"
+#include "CreateType.h"
 
 int N; // 服务器类型数量
 std::unordered_map<std::string, server> serverType; // 服务器类型数组
@@ -21,21 +23,6 @@ int T; // T天的用户数据
 std::vector<request> requestList; // 请求列表
 int serverId = 0; // 服务器id
 std::vector<std::vector<std::string> > BuyList; // T天 每天一个List 存需要买的服务器的名字
-
-struct CreateType{
-    int _serverId;
-    int _type;
-    int order;
-    CreateType() {
-        _serverId = 0;
-        _type = 0;
-        order = 0;
-    }
-    CreateType(int _serverId, int _type, int order) : _serverId(_serverId), _type(_type), order(order) {}
-    inline bool friend operator< (const CreateType &A, const CreateType &B) {
-        return A.order < B.order;
-    }
-};
 std::vector<std::vector< CreateType > > CreateList; // T天 每天一个List 存的是虚拟机实际存储的位置
 
 // T天 每天一个List 存的是当天虚拟机迁移的序列 

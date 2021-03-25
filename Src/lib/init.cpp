@@ -8,7 +8,6 @@ void init() {
     for (int i = 0; i < T + 5; i++) CreateList.push_back(std::vector< CreateType >(0) );
     for (int i = 0; i < T + 5; i++) moveList.push_back(std::vector<moveMark>(0) );
     for (int i = 0; i < T + 5; i++) serverRequest.push_back(std::make_pair(0,0) );
-
     auto cmp = [&](request &i, request &j) {
         return virtualServerType[i.name].core + virtualServerType[i.name].ram > virtualServerType[j.name].core + virtualServerType[j.name].ram;
     };
@@ -34,7 +33,6 @@ void init() {
         std::sort(i , j , cmp);
         i = j;
     }
-
 }
 
 // 记录购买一台服务器

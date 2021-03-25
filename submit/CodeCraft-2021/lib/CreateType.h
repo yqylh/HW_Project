@@ -1,5 +1,3 @@
-#ifndef __CreateType__
-#define __CreateType__
 struct CreateType{
     int _serverId;
     int _type;
@@ -14,4 +12,3 @@ struct CreateType{
         return A.order < B.order;
     }
 };
-#endif
