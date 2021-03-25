@@ -59,6 +59,7 @@ void move(int day) {
     std::vector<rateSolve> rate(serverList.size()); // 数值越大空间越高;
     for (auto & i : serverList) {
         rate[i.first] = rateSolve(i.first, i.second.lCore + i.second.rCore + i.second.lRam + i.second.rRam );
+        // rate[i.first] = rateSolve(i.first, i.second.lCore + i.second.rCore + i.second.lRam + i.second.rRam - i.second.ram - i.second.core);
     }
     for (auto & i : virtualServerList) {
         rate[i.second.serverId].virSerIds.push_back(i.first);
@@ -104,6 +105,44 @@ void move(int day) {
             }
         }
     }
-}
 
+    // int maxMoveNum = virtualServerList.size() * 5 / 1000;
+    // std::vector<rateSolve> rate(serverList.size()); // 数值越大空间越高;
+    // for (auto & i : serverList) {
+    //     rate[i.first] = rateSolve(i.first, -i.second.lCore - i.second.rCore - i.second.lRam - i.second.rRam );
+    // }
+    // for (auto & i : virtualServerList) {
+    //     rate[i.second.serverId].virSerIds.push_back(i.first);
+    // }
+    // std::sort(rate.begin(), rate.end()); // begin是剩余空间最小的, rbegin是剩余空间最大的
+    // for(int i = 0 ; i < serverList.size() / 3 ; i++) { 
+    //     for (auto & virSerId : rate[i].virSerIds) {
+    //         for (int j = rate.size() - 1; j > i; j--) {
+    //             auto &virSer = virtualServerList[virSerId];
+    //             auto &Ser = serverList[rate[j].id];
+    //             if (virSer.isDouble == 1) {
+    //                 if (Ser.lCore > virSer.core / 2 && Ser.lRam > virSer.ram / 2 && Ser.rCore > virSer.core / 2 && Ser.rRam > virSer.ram / 2 && virSer.serverId != Ser.id) {
+    //                     moveAction(moveMark(virSer.id, Ser.id, -1), day);
+    //                     maxMoveNum--;
+    //                     break;
+    //                 }
+    //             } else {
+    //                 if (Ser.lCore > virSer.core && Ser.lRam > virSer.ram) {
+    //                     if (Ser.id == virSer.serverId && virSer.where == 0) continue;
+    //                     moveAction(moveMark(virSer.id, Ser.id, 0), day);
+    //                     maxMoveNum--;
+    //                     break;
+    //                 } else if (Ser.rCore > virSer.core && Ser.rRam > virSer.ram) {
+    //                     if (Ser.id == virSer.serverId && virSer.where == 1) continue;
+    //                     moveAction(moveMark(virSer.id, Ser.id, 1), day);
+    //                     maxMoveNum--;
+    //                     break;
+    //                 }
+    //             }
+    //         }
+    //         if (maxMoveNum == 0) break;
+    //     }
+    //     if (maxMoveNum == 0) break;
+    // }
+}
 #endif
