@@ -54,14 +54,8 @@ void buyServer(request & req, virtualServer & virSerType , bool isDouble) {
 
     // 策略一和二
     std::string ans = "";
-    // double cs = 2.15; // 买2倍大 
-    // if (virSerType.isDouble == 0) cs *= 1.45; // 1.4~1.5是最优的
-    double cs; // 买2倍大 
-    if (virSerType.isDouble == 0) {
-        cs = 3.16;
-    } else {
-        cs = 2.15;
-    }
+    double cs = 2.15; // 买2倍大 
+    if (virSerType.isDouble == 0) cs *= 1.45; // 1.4~1.5是最优的
 
     for (auto & i : serverType) {
         if (i.second.core >= virSerType.core * cs && i.second.ram >= virSerType.ram * cs) {
