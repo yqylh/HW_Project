@@ -6,6 +6,7 @@
 #include <unordered_map>
 #include <sstream>
 #include <climits>
+#include <queue>
 #include <algorithm>
 #include "server.h"
 #include "virtualServer.h"

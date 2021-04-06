@@ -53,46 +53,6 @@ int findServer(request & req, virtualServer & virSerType , bool isDouble) {
                 }
             }
         }
-        // 充分比较左右两个子节点
-        // for (auto & i : serverList) {
-        //     // 查找可以塞的下的
-        //     if ( (i.second.lCore >= virSerType.core && i.second.lRam >= virSerType.ram) || (i.second.rCore >= virSerType.core && i.second.rRam >= virSerType.ram)) {
-        //         if (retServerId == -1) {
-        //             retServerId = i.first;
-        //             if (i.second.lCore >= virSerType.core && i.second.lRam >= virSerType.ram) {
-        //                 if (i.second.rCore >= virSerType.core && i.second.rRam >= virSerType.ram ) {
-        //                     if (i.second.lCore + i.second.lRam > i.second.rCore + i.second.rRam) {
-        //                         lorR = 1;
-        //                     } else {
-        //                         lorR = 0;
-        //                     }
-        //                 } else {
-        //                     lorR = 0;
-        //                 }
-        //             } else {
-        //                 lorR = 1;
-        //             }
-        //             continue;
-        //         }
-        //         if (i.second.lCore + i.second.rCore + i.second.lRam + i.second.rRam >= serverList[retServerId].lCore + serverList[retServerId].rCore + serverList[retServerId].lRam + serverList[retServerId].rRam ) continue;
-
-        //         retServerId = i.first;
-        //         if (i.second.lCore >= virSerType.core && i.second.lRam >= virSerType.ram) {
-        //             if (i.second.rCore >= virSerType.core && i.second.rRam >= virSerType.ram ) {
-        //                 if (i.second.lCore + i.second.lRam > i.second.rCore + i.second.rRam) {
-        //                     lorR = 1;
-        //                 } else {
-        //                     lorR = 0;
-        //                 }
-        //             } else {
-        //                 lorR = 0;
-        //             }
-        //         } else {
-        //             lorR = 1;
-        //         }
-        //     }
-        // }
-
         if (retServerId != -1) {
             auto &x = serverList[retServerId];
             if (lorR == 0) {

@@ -48,10 +48,10 @@ void moveAction(moveMark x, int day) {
         virSer.serverId = ser.id;
     }
 }
-// 迁移策略
+// // 迁移策略
 void move(int day) {
     // int maxMoveNum = virtualServerList.size() * 3 / 100;
-    int maxMoveNum = virtualServerList.size() * 1 / 100;
+    int maxMoveNum = virtualServerList.size() * 0.015;
     // 策略二 : 把剩余空间大的服务器上的虚拟机迁移到剩余空间小的服务器上
     std::vector<rateSolve> rate(serverList.size()); // 数值越大空间越高;
     for (auto & i : serverList) {
@@ -97,113 +97,63 @@ void move(int day) {
         }
     }
 }
-#endif
-
-
-// // 迁移策略
+// 迁移策略
+// std::vector<int> canMoveList;
+// std::priority_queue<rateSolve> queue;
 // void move(int day) {
-//     int maxMoveNum = virtualServerList.size() * 5 / 1000;
-
-//     // 策略二 : 把剩余空间大的服务器上的虚拟机迁移到剩余空间小的服务器上
+//     canMoveList.clear();
+//     while (!queue.empty()) queue.pop();
+//     int limit = virtualServerList.size() * 0.3;
 //     std::vector<rateSolve> rate(serverList.size()); // 数值越大空间越高;
 //     for (auto & i : serverList) {
 //         rate[i.first] = rateSolve(i.first, i.second.lCore + i.second.rCore + i.second.lRam + i.second.rRam );
-//         // rate[i.first] = rateSolve(i.first, i.second.lCore + i.second.rCore + i.second.lRam + i.second.rRam - i.second.ram - i.second.core);
 //     }
 //     for (auto & i : virtualServerList) {
 //         rate[i.second.serverId].virSerIds.push_back(i.first);
 //     }
-
 //     std::sort(rate.begin(), rate.end()); // begin是剩余空间最小的, rbegin是剩余空间最大的
 //     // 从剩余空间从大到小去把服务器上的虚拟机id加到list里面
-//     std::vector<int> canMoveList;
-//     int dontCareLess = rate.size() / 5;
-//     // bug : 后面的不能移动 
-//     for (auto i = rate.rbegin(); i != rate.rend() && dontCareLess; i++ , dontCareLess--) {
-//         // if ((double)(i->rate) / ((double)serverList[i->id].core + serverList[i->id].ram) > 0.8) continue;
-//         for (auto & j : i->virSerIds) {
+//     for (auto i = rate.rbegin(); i != rate.rend(); i++) {
+//         if (limit == 0) {
+//             queue.push(*i);
+//         }
+//         for (auto & j : i->virSerIds) if (limit) {
 //             canMoveList.push_back(j);
+//             limit--;
 //         }
 //     }
-//     // 从大到小排序 不一定有用
-//     // auto cmp = [&](int & A, int & B) {
-//     //     return virtualServerList[A].core + virtualServerList[A].ram > virtualServerList[B].core + virtualServerList[B].ram;
-//     // };
-//     // std::sort(canMoveList.begin(), canMoveList.end(), cmp);
-
+//     auto cmp = [&](int & A, int & B) {
+//         return virtualServerList[A].core + virtualServerList[A].ram > virtualServerList[B].core + virtualServerList[B].ram;
+//     };
+//     std::sort(canMoveList.begin(), canMoveList.end(), cmp);
 //     // 对于每个可以移动的虚拟机 移动他
+//     int maxMoveNum = virtualServerList.size() * 3 / 100;
 //     for (auto & i : canMoveList) {
 //         if (maxMoveNum == 0) break;
-//         for (auto j = rate.begin(); j != rate.end(); j++) {
-//             if (maxMoveNum == 0) break;
-//             auto &virSer = virtualServerList[i];
-//             auto &Ser = serverList[j->id];
-
-//             // bug : 只能移动到前面, 但可能会移动到后面
-//             if (Ser.id == virSer.serverId) break;
-//             // bug fix : 重合的时候就不再向后找了
-
-//              bug : 比较左右两个节点放在哪里
-//             if (virSer.isDouble == 1) {
-//                 if (Ser.lCore > virSer.core / 2 && Ser.lRam > virSer.ram / 2 && Ser.rCore > virSer.core / 2 && Ser.rRam > virSer.ram / 2 && virSer.serverId != Ser.id) {
-//                     moveAction(moveMark(virSer.id, Ser.id, -1), day);
-//                     maxMoveNum--;
-//                     break;
-//                 }
-//             } else {
-//                 if (Ser.lCore > virSer.core && Ser.lRam > virSer.ram) {
-//                     moveAction(moveMark(virSer.id, Ser.id, 0), day);
-//                     maxMoveNum--;
-//                     break;
-//                 } else if (Ser.rCore > virSer.core && Ser.rRam > virSer.ram) {
-//                     moveAction(moveMark(virSer.id, Ser.id, 1), day);
-//                     maxMoveNum--;
-//                     break;
-//                 }
+//         auto j = queue.top(); queue.pop();
+//         auto &virSer = virtualServerList[i];
+//         auto &Ser = serverList[j.id];
+//         bool flag = 0;
+//         if (virSer.isDouble == 1) {
+//             if (Ser.lCore > virSer.core / 2 && Ser.lRam > virSer.ram / 2 && Ser.rCore > virSer.core / 2 && Ser.rRam > virSer.ram / 2 && virSer.serverId != Ser.id) {
+//                 moveAction(moveMark(virSer.id, Ser.id, -1), day);
+//                 flag = 1;
+//             }
+//         } else {
+//             if (Ser.lCore > virSer.core && Ser.lRam > virSer.ram) {
+//                 moveAction(moveMark(virSer.id, Ser.id, 0), day);
+//                 flag = 1;
+//             } else if (Ser.rCore > virSer.core && Ser.rRam > virSer.ram) {
+//                 moveAction(moveMark(virSer.id, Ser.id, 1), day);
+//                 flag = 1;
 //             }
 //         }
+//         if (flag) {
+//             auto &ser = serverList[j.id];
+//             j.rate = ser.lCore + ser.rCore + ser.lRam + ser.rRam;
+//             maxMoveNum--;
+//         }
+//         queue.push(j);
 //     }
-
-//     // int maxMoveNum = virtualServerList.size() * 5 / 1000;
-//     // std::vector<rateSolve> rate(serverList.size()); // 数值越大空间越高;
-//     // for (auto & i : serverList) {
-//     //     rate[i.first] = rateSolve(i.first, i.second.lCore + i.second.rCore + i.second.lRam + i.second.rRam );
-//     // }
-//     // for (auto & i : virtualServerList) {
-//     //     rate[i.second.serverId].virSerIds.push_back(i.first);
-//     // }
-//     // std::sort(rate.begin(), rate.end()); // begin是剩余空间最小的, rbegin是剩余空间最大的
-//     // int num = rate.size();
-//     // int ignore = rate.size() * 5 / 6;
-//     // for (auto i = rate.rbegin(); i != rate.rend() && num > ignore; i++, num--) {
-//     //     for (auto & virSerId : i->virSerIds) {
-//     //         if (maxMoveNum == 0) break;
-//     //         for (int j = 0; j < num; j++) {
-//     //             auto &virSer = virtualServerList[virSerId];
-//     //             auto &Ser = serverList[rate[j].id];
-//     //             if (virSer.isDouble == 1) {
-//     //                 if (Ser.lCore > virSer.core / 2 && Ser.lRam > virSer.ram / 2 && Ser.rCore > virSer.core / 2 && Ser.rRam > virSer.ram / 2 && virSer.serverId != Ser.id) {
-//     //                     moveAction(moveMark(virSer.id, Ser.id, -1), day);
-//     //                     maxMoveNum--;
-//     //                     break;
-//     //                 }
-//     //             } else {
-//     //                 if (Ser.lCore > virSer.core && Ser.lRam > virSer.ram) {
-//     //                     // if (Ser.id == virSer.serverId && virSer.where == 0) continue;
-//     //                     moveAction(moveMark(virSer.id, Ser.id, 0), day);
-//     //                     maxMoveNum--;
-//     //                     break;
-//     //                 } else if (Ser.rCore > virSer.core && Ser.rRam > virSer.ram) {
-//     //                     // if (Ser.id == virSer.serverId && virSer.where == 1) continue;
-//     //                     moveAction(moveMark(virSer.id, Ser.id, 1), day);
-//     //                     maxMoveNum--;
-//     //                     break;
-//     //                 }
-//     //             }
-//     //         }
-//     //     }
-//     // }
-//     // if (num == rate.size() * 2 / 3)
-//     // std::cout << num << " " << rate.size() * 2 / 3 << "\n";
 // }
-// #endif
+#endif

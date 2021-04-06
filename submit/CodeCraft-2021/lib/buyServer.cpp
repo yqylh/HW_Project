@@ -7,7 +7,8 @@ void buyServer(request & req, virtualServer & virSerType , bool isDouble) {
     // static bool initOnce = false;
     // if (initOnce == false ) {
     //     initOnce = true;
-    //     for (auto & i : requestList) {
+    //     for (auto & j : requestList)
+    //     for (auto & i : j) {
     //         if (i.type == 0) {
     //             serverRequest[i.day].first += virtualServerType[i.name].core;
     //             serverRequest[i.day].second += virtualServerType[i.name].ram;
