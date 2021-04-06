@@ -1,8 +1,5 @@
 {
     "files.associations": {
-        "xstring": "cpp",
-        "vector": "cpp",
-        "string": "cpp",
         "array": "cpp",
         "atomic": "cpp",
         "*.tcc": "cpp",
@@ -18,12 +15,14 @@
         "cwctype": "cpp",
         "deque": "cpp",
         "unordered_map": "cpp",
+        "vector": "cpp",
         "exception": "cpp",
         "algorithm": "cpp",
         "map": "cpp",
         "memory": "cpp",
         "memory_resource": "cpp",
         "optional": "cpp",
+        "string": "cpp",
         "string_view": "cpp",
         "system_error": "cpp",
         "tuple": "cpp",
@@ -40,8 +39,6 @@
         "sstream": "cpp",
         "stdexcept": "cpp",
         "streambuf": "cpp",
-        "typeinfo": "cpp",
-        "xhash": "cpp",
-        "list": "cpp"
+        "typeinfo": "cpp"
     }
 }

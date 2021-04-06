@@ -50,7 +50,8 @@ void moveAction(moveMark x, int day) {
 }
 // 迁移策略
 void move(int day) {
-    int maxMoveNum = virtualServerList.size() * 3 / 100;
+    // int maxMoveNum = virtualServerList.size() * 3 / 100;
+    int maxMoveNum = virtualServerList.size() * 1 / 100;
     // 策略二 : 把剩余空间大的服务器上的虚拟机迁移到剩余空间小的服务器上
     std::vector<rateSolve> rate(serverList.size()); // 数值越大空间越高;
     for (auto & i : serverList) {
@@ -62,9 +63,7 @@ void move(int day) {
     std::sort(rate.begin(), rate.end()); // begin是剩余空间最小的, rbegin是剩余空间最大的
     // 从剩余空间从大到小去把服务器上的虚拟机id加到list里面
     std::vector<int> canMoveList;
-    // int dontCareLess = rate.size() * 0.8;
-    for (auto i = rate.rbegin(); i != rate.rend() && maxMoveNum /*&& dontCareLess*/; i++/* , dontCareLess--*/) {
-        if ((double)(i->rate) / ((double)serverList[i->id].core + serverList[i->id].ram) > 0.8) continue;
+    for (auto i = rate.rbegin(); i != rate.rend() && maxMoveNum ; i++) {
         for (auto & j : i->virSerIds) if (maxMoveNum) {
             canMoveList.push_back(j);
             maxMoveNum--;

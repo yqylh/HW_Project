@@ -18,8 +18,7 @@ int main() {
     }
     for (int day = 1; day <= T - K; ++day) {
         if (day != 1) {
-            // move(day);
-            inputRequest(day + K - 1);
+            move(day);
         }
         for (auto & req : requestList[day]) {
             // 创建请求
@@ -33,9 +32,10 @@ int main() {
             }
         }
         output(day);
+        inputRequest(day + K);
     }
     for (int day = T - K + 1; day <= T; ++day) {
-        // move(day);
+        move(day);
         for (auto & req : requestList[day]) {
             // 创建请求
             if (req.type == 0) {
