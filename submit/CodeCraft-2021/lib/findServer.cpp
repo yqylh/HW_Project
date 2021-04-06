@@ -53,7 +53,7 @@ int findServer(request & req, virtualServer & virSerType , bool isDouble) {
                 }
             }
         }
-
+        // 充分比较左右两个子节点
         // for (auto & i : serverList) {
         //     // 查找可以塞的下的
         //     if ( (i.second.lCore >= virSerType.core && i.second.lRam >= virSerType.ram) || (i.second.rCore >= virSerType.core && i.second.rRam >= virSerType.ram)) {
