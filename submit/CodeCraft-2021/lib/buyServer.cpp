@@ -4,55 +4,6 @@
 // 购买一台可以放得下的服务器
 void buyServer(request & req, virtualServer & virSerType , bool isDouble) {
     // 策略三 预处理一天的量进行考虑
-    // static bool initOnce = false;
-    // if (initOnce == false ) {
-    //     initOnce = true;
-    //     for (auto & j : requestList)
-    //     for (auto & i : j) {
-    //         if (i.type == 0) {
-    //             serverRequest[i.day].first += virtualServerType[i.name].core;
-    //             serverRequest[i.day].second += virtualServerType[i.name].ram;
-    //         } else {
-    //             if (virtualServerList.count(i.id)) {
-    //                 serverRequest[i.day].first -= virtualServerList[i.id].core;
-    //                 serverRequest[i.day].second -= virtualServerList[i.id].ram;
-    //             }
-    //         }
-    //     }
-    // }
-    // if (serverRequest[req.day].first < virSerType.core * (virSerType.isDouble == 1 ? 1 : 2)) serverRequest[req.day].first = virSerType.core* (virSerType.isDouble == 1 ? 1 : 2);
-    // if (serverRequest[req.day].second < virSerType.ram * (virSerType.isDouble == 1 ? 1 : 2)) serverRequest[req.day].second = virSerType.ram* (virSerType.isDouble == 1 ? 1 : 2);
-    
-    // // if (serverRequest[req.day].first > virSerType.core * 2) serverRequest[req.day].first = virSerType.core * 2;
-    // // // if (serverRequest[req.day].second > virSerType.ram * 2) serverRequest[req.day].second = virSerType.ram * 2;
-    // std::string ans = "";
-    // bool bigger = 0; // 1->  ans比需求量大 0->ans比需求量小
-    // for (auto & i : serverType) {
-    //     if (ans == "") {
-    //         ans = i.first;
-    //         if (i.second.core > serverRequest[req.day].first && i.second.ram > serverRequest[req.day].second) {
-    //             bigger = 1;
-    //         }
-    //         continue;
-    //     }
-    //     if (!bigger) { // 还没超过需求 尽量买大的
-    //         if (i.second.core > serverType[ans].core && i.second.ram > serverType[ans].ram) {
-    //             ans = i.first;
-    //             if (i.second.core > serverRequest[req.day].first && i.second.ram > serverRequest[req.day].second) {
-    //                 bigger = 1;
-    //             }
-    //         }
-    //     } else { // 超过需求了 尽量买便宜的
-    //         if (i.second.core > serverRequest[req.day].first && i.second.ram > serverRequest[req.day].second) {
-    //             if (serverType[ans].cost + serverType[ans].dayCost * (T - req.day) > i.second.cost + i.second.dayCost * (T - req.day)) {
-    //                 ans = i.first;
-    //             }
-    //         }
-    //     }
-    // }
-    // serverRequest[req.day].first -= virtualServerType[ans].core;
-    // serverRequest[req.day].second -= virtualServerType[ans].ram;
-
     // 策略一和二
     std::string ans = "";
     double cs = 2.15; // 买2倍大 
