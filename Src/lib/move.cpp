@@ -51,7 +51,7 @@ void moveAction(moveMark x, int day) {
 // // 迁移策略
 void move(int day) {
     // int maxMoveNum = virtualServerList.size() * 3 / 100;
-    int maxMoveNum = virtualServerList.size() * 0.012;
+    int maxMoveNum = virtualServerList.size() * 0.01;
     // 策略二 : 把剩余空间大的服务器上的虚拟机迁移到剩余空间小的服务器上
     std::vector<rateSolve> rate(serverList.size()); // 数值越大空间越高;
     for (auto & i : serverList) {

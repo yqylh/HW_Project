@@ -20,15 +20,15 @@ int main() {
         if (day != 1) {
             move(day);
         }
-        for (auto & req : requestList[day]) {
+        for (auto req = requestList[day].begin(); req != requestList[day].end(); req++){
             // 创建请求
-            if (req.type == 0) {
-                auto &virSerType = virtualServerType[req.name];
-                if (findServer(req, virSerType, virSerType.isDouble)  == -1) {
+            if (req->type == 0) {
+                auto &virSerType = virtualServerType[req->name];
+                if (findServer(*req, virSerType, virSerType.isDouble)  == -1) {
                     buyServer(req, virSerType, virSerType.isDouble);
                 }
             } else { // 删除
-                deleteVitrualServer(req.id);
+                deleteVitrualServer(req->id);
             }
         }
         output(day);
@@ -36,15 +36,15 @@ int main() {
     }
     for (int day = T - K + 1; day <= T; ++day) {
         move(day);
-        for (auto & req : requestList[day]) {
+        for (auto req = requestList[day].begin(); req != requestList[day].end(); req++){
             // 创建请求
-            if (req.type == 0) {
-                auto &virSerType = virtualServerType[req.name];
-                if (findServer(req, virSerType, virSerType.isDouble)  == -1) {
+            if (req->type == 0) {
+                auto &virSerType = virtualServerType[req->name];
+                if (findServer(*req, virSerType, virSerType.isDouble)  == -1) {
                     buyServer(req, virSerType, virSerType.isDouble);
                 }
             } else { // 删除
-                deleteVitrualServer(req.id);
+                deleteVitrualServer(req->id);
             }
         }
         output(day);
