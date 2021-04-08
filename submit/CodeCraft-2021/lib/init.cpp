@@ -18,5 +18,12 @@ void recordBuy(int _day, std::string _name) {
 // 记录创建一台虚拟机
 void recordCreate(int _day , int _serverId , int _type, int order) {
     CreateList[_day].push_back(CreateType(_serverId , _type, order));
+// #ifdef EBUG
+    for (auto & ser : serverList) {
+        if (ser.second.lCore < 0 || ser.second.lRam < 0 || ser.second.rCore < 0 || ser.second.rRam < 0) {
+            throw;
+        }
+    }
+// #endif
 }
 #endif

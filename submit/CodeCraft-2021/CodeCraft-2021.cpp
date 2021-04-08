@@ -13,41 +13,60 @@
 int main() {
     input();
     init();
-    for (int day = 1; day <= K; ++day) {
-        inputRequest(day);
-    }
-    for (int day = 1; day <= T - K; ++day) {
-        if (day != 1) {
-            move(day);
-        }
-        for (auto req = requestList[day].begin(); req != requestList[day].end(); req++){
-            // 创建请求
-            if (req->type == 0) {
-                auto &virSerType = virtualServerType[req->name];
-                if (findServer(*req, virSerType, virSerType.isDouble)  == -1) {
-                    buyServer(req, virSerType, virSerType.isDouble);
+    for (int day = 1; day <= K; ++day) inputRequest(day);
+    for (int day = 1; day <= T; ++day) {
+        
+        if (day != 1) move(day);
+
+        for (int i = 0; i < requestList[day].size(); i++) {
+            auto req = requestList[day][i];
+            if (req.type == 0) {
+                auto &virSerType = virtualServerType[req.name];
+                if (findServer(req, virSerType, virSerType.isDouble)  == -1) {
+                    std::vector<request> arr;
+                    // 参数一
+                    int limit = 2;
+                    while (limit-- && i < requestList[day].size()) {
+                        req = requestList[day][i];
+                        if (req.type == 1) break;
+                        arr.push_back(req);
+                        i++;
+                    }
+                    i--;
+                    buyServer(arr, day);
                 }
             } else { // 删除
-                deleteVitrualServer(req->id);
+                deleteVitrualServer(req.id);
             }
         }
-        output(day);
-        inputRequest(day + K);
-    }
-    for (int day = T - K + 1; day <= T; ++day) {
-        move(day);
-        for (auto req = requestList[day].begin(); req != requestList[day].end(); req++){
-            // 创建请求
-            if (req->type == 0) {
-                auto &virSerType = virtualServerType[req->name];
-                if (findServer(*req, virSerType, virSerType.isDouble)  == -1) {
-                    buyServer(req, virSerType, virSerType.isDouble);
-                }
-            } else { // 删除
-                deleteVitrualServer(req->id);
-            }
-        }
-        output(day);
+        #ifdef EBUG
+            // int reqnum = 0;
+            // for (auto & req : requestList[day]) if (req.type == 0) reqnum++;
+            // std::cout << reqnum << " " << CreateList[day].size() << std::endl;
+            // if (reqnum != CreateList[day].size()) {
+            //     int ans = 0;
+            //     for (auto & create : CreateList[day]) {
+            //         bool flag = 0;
+            //         for (auto & req : requestList[day]) {
+            //             if (req.order == create.order) {
+            //                 // std::cout << req.type << std::endl;
+            //                 ans++;
+            //                 flag = 1;
+            //                 break;
+            //             }
+            //         }
+            //         if (!flag) {
+            //             std::cout << create.order << std::endl;
+            //         }
+            //     }
+            //     // std::cout << ans << std::endl;
+            //     throw;
+            // }
+        #else
+            output(day);
+        #endif
+
+        if (day <= T - K) inputRequest(day + K);
     }
     return 0;
 }
