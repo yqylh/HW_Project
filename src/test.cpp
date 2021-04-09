@@ -11,10 +11,8 @@
 #include "lib/findServer.cpp"
 #include "toolkit/OfflineJudger.hpp"
 
-int main()
+int run()
 {
-    freopen("training-1.txt", "r", stdin);
-    freopen("output.txt", "w", stdout);
     input();
     init();
     for (int day = 1; day <= K; ++day) inputRequest(day);
@@ -78,6 +76,16 @@ int main()
 
         if (day <= T - K) inputRequest(day + K);
     }
-    runJudger("output.txt", "result.txt");
     return 0;
+}
+
+int main()
+{
+//    freopen("training-1.txt", "r", stdin);
+//    freopen("output1.txt", "w", stdout);
+//    run();
+
+    freopen("training-2.txt", "r", stdin);
+    freopen("output2.txt", "w", stdout);
+    run();
 }

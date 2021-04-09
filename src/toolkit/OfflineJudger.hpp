@@ -54,7 +54,7 @@ struct Vir
     }
 };
 
-int judge(const char *inFileName, const char* outFileName)
+std::pair<int, int> judge(const char *inFileName, const char* outFileName)
 {
     std::ifstream infile(inFileName);
     std::ifstream outfile(outFileName);
@@ -269,6 +269,5 @@ int judge(const char *inFileName, const char* outFileName)
             }
         }
     }
-    std::cout << "total cost: " << cost << '\n';
-    std::cout << "migration num: " << mi << '\n';
+    return std::pair<int, int>(cost, mi);
 }
