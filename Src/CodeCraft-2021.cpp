@@ -25,7 +25,7 @@ int main() {
                 if (findServer(req, virSerType, virSerType.isDouble)  == -1) {
                     std::vector<request> arr;
                     // 参数一
-                    int limit = 12;
+                    int limit = 10;
                     while (limit-- && i < requestList[day].size()) {
                         req = requestList[day][i];
                         if (req.type == 1) break;

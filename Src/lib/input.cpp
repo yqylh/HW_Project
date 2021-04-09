@@ -129,7 +129,11 @@ void inputRequest(int day) {
     }
 
     auto cmp = [&](request &i, request &j) {
-        return virtualServerType[i.name].core + virtualServerType[i.name].ram > virtualServerType[j.name].core + virtualServerType[j.name].ram;
+        if (virtualServerType[i.name].isDouble != virtualServerType[j.name].isDouble) {
+            return virtualServerType[i.name].isDouble > virtualServerType[j.name].isDouble;
+        } else {
+            return virtualServerType[i.name].core + virtualServerType[i.name].ram > virtualServerType[j.name].core + virtualServerType[j.name].ram;
+        }
     };
     for (auto i = requestList[day].begin(); i != requestList[day].end();) {
         auto j = i;
