@@ -9,6 +9,7 @@
 #include "lib/init.cpp"
 #include "lib/buyServer.cpp"
 #include "lib/findServer.cpp"
+#include "toolkit/OfflineJudger.hpp"
 
 int main()
 {
@@ -77,5 +78,6 @@ int main()
 
         if (day <= T - K) inputRequest(day + K);
     }
+    runJudger("output.txt", "result.txt");
     return 0;
 }
