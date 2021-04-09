@@ -1,3 +1,7 @@
+# Build Dir
+src/cmake-build-release
+src/cmake-build-debug
+
 # Prerequisites
 *.d
 

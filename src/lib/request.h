@@ -3,14 +3,17 @@
 
 #include <string>
 
-struct request{
+struct request
+{
     bool type; // 0-> add || 1-> delete
     int id; //虚拟机id
     std::string name; // 虚拟机型号
     int day; // 第几天的请求
     int order;
     int rate;
-    request() {
+
+    request()
+    {
         type = 0;
         id = 0;
         name.clear();

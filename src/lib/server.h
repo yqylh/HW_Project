@@ -3,7 +3,8 @@
 
 #include <string>
 
-struct server {
+struct server
+{
     std::string name; // 服务器名称
     int core;  // 核心数
     int ram;  // 内存大小
@@ -15,15 +16,20 @@ struct server {
     int rCore; // 右核心剩余数量
     int lRam;  // 左内存剩余数量
     int rRam;  // 右内存剩余数量
-    server() {
+    server()
+    {
         name.clear();
         core = 0;
         ram = 0;
         cost = 0;
         dayCost = 0;
     }
-    ~server() {}
-    void input(std::string name, int core, int ram, int cost, int dayCost) {
+
+    ~server()
+    {}
+
+    void input(std::string name, int core, int ram, int cost, int dayCost)
+    {
         this->name = name;
         this->core = core;
         this->ram = ram;
