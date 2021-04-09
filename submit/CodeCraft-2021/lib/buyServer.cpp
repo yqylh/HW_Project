@@ -72,8 +72,8 @@ std::pair<int, int> merge(std::vector<request> arr) {
         }
     }
     // 第二个参数 玄学倍数
-    ret.first = std::max(lCore, rCore) * 2;
-    ret.second = std::max(lRam, rRam) * 2;
+    ret.first = std::max(lCore, rCore);
+    ret.second = std::max(lRam, rRam);
 #ifdef EBUG
     // std::cout << "merge : " << ret.first << " " << ret.second << std::endl;
 #endif
@@ -150,6 +150,51 @@ void buyServer(std::vector<request> arr , int day) {
             index = i;
         }
     }
+    // 小想法
+    if (arr.size() == 4) {
+        bool which = 0;
+        std::swap(arr[0], arr[1]);
+        std::swap(arr[2], arr[3]);
+        std::swap(arr[0], arr[3]);
+        for (int i = 0; i <= (1 << (n-1))-1 ; i++) {
+            temp.clear();
+            int bit = i; // 二进制枚举
+            int cost = 0;
+            bool flag = 1;
+            for (auto & req : arr) {
+                temp.push_back(req);
+                int ans = bit & 1;
+                bit >>= 1;
+                if (ans) {
+                    auto ret = solveMinCost(merge(temp), day);
+                    if (ret.first == "") {
+                        flag = 0;
+                    }
+                    cost += ret.second;
+                    temp.clear();
+                }
+            }
+            if (temp.size() > 0) {
+                auto ret = solveMinCost(merge(temp), day);
+                if (ret.first == "") {
+                    flag = 0;
+                }
+                cost += ret.second;
+                temp.clear();
+            }
+            if (flag && cost < ans) {
+                ans = cost;
+                index = i;
+                which = 1;
+            }
+        }
+        if (which == 0) {
+            std::swap(arr[0], arr[3]);
+            std::swap(arr[2], arr[3]);
+            std::swap(arr[0], arr[1]);
+        }
+    }
+    // end
     temp.clear();
     int bit = index; // 二进制枚举
     for (auto & req : arr) {

@@ -22,5 +22,14 @@ struct rateSolve{
     inline friend bool operator<(const rateSolve &A, const rateSolve &B){
         return A.rate < B.rate;
     }
+    void operator=(const rateSolve &B)  {
+        id = B.id;
+        rate = B.rate;
+        lorR = B.lorR;
+        virSerIds.clear();
+        for (auto & i : B.virSerIds) {
+            virSerIds.push_back(i);
+        }
+    }
 };
 #endif
