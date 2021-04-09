@@ -72,8 +72,8 @@ std::pair<int, int> merge(std::vector<request> arr) {
         }
     }
     // 第二个参数 玄学倍数
-    ret.first = std::max(lCore, rCore);
-    ret.second = std::max(lRam, rRam);
+    ret.first = std::max(lCore, rCore) * 2;
+    ret.second = std::max(lRam, rRam) * 2;
 #ifdef EBUG
     // std::cout << "merge : " << ret.first << " " << ret.second << std::endl;
 #endif
@@ -91,7 +91,6 @@ std::pair<std::string, int> solveMinCost(std::pair<int , int> x, int day) {
                 continue;
             }
             int nowCost = i.second.cost + i.second.dayCost * (T - day);
-            // 策略一 买总消耗最便宜的 消耗越小大概率越匹配 产生的碎片可能无法利用
             if (nowCost < oldCost) {
                 ans = i.first;
                 oldCost = nowCost;
@@ -119,6 +118,7 @@ void buyServer(std::vector<request> arr , int day) {
     int n = arr.size(); // request的个数
     std::vector<request > temp; // 暂存
     int ans = INT_MAX; int index = -1; // 存放最优位置
+    // 第四个策略 这是一个固定序列 应该要全排列序列
     for (int i = 0; i <= (1 << (n-1))-1 ; i++) {
         temp.clear();
         int bit = i; // 二进制枚举
